@@ -1990,3 +1990,95 @@ int main() {
 }
 ```
 
+## 求字符串长度的递归函数
+
+```c
+/* 
+ * Chinese Comment by UTF-8
+ * 
+ * 题目内容
+ * 请编写一个求字符串长度的递归函数，函数原型为：int strlong(char *string)
+ * 
+ * 分析
+ * 传统艺能：循环转尾递归
+ */
+
+int strlong(char* string) {
+    if (string[0] == '\0') return 0;
+    else return strlong(string + 1) + 1;
+}
+```
+
+## 卖鸭子
+
+**题目内容：**
+
+编程调用递归函数。一个人赶着鸭子去每个村庄卖，每经过一个村子卖去所赶鸭子的一半又一只。这样他经过了7个村子后还剩2只鸭子，问他出发时共赶多少只鸭子？经过每个村子时依次卖出多少只鸭子？
+
+**输入格式：**
+
+无
+
+**输出格式：**
+
+出发时总鸭子数
+
+每个村子卖出鸭子数
+
+**输出样例：** (不是结果，仅表示格式)
+
+```c
+sum=25[回车]
+sell=8,sell=4,[回车]
+```
+
+**✅ 算法思路（逆推递归）**
+
+设：
+
+- 第 $n$ 个村子进入前有 $x$ 只鸭子
+- 经过第 $n$ 个村子后卖出 $x/2 + 1$ 只，剩下 $x - (x/2 + 1) = x/2 - 1$
+
+反过来：
+
+- 如果第 $n$ 个村子**后剩下 $y$ 只**
+- 那么进入前应该是 $x = 2 \times (y + 1)$
+
+从最后一个村子往前递归回去即可。
+
+```c
+#include <stdio.h>
+
+#define VILLAGE_NUM 7
+
+// 递归计算出发前总鸭子数
+int calc(int n, int left[], int sell[]) {
+    if (n == VILLAGE_NUM) {
+        left[n] = 2;  // 最后一个村子卖完之后剩2只
+    } else {
+        calc(n + 1, left, sell);
+        left[n] = (left[n + 1] + 1) * 2;
+    }
+    // 每个村子卖掉多少鸭子
+    sell[n] = left[n] / 2 + 1;
+    return left[0];
+}
+
+int main() {
+    int left[VILLAGE_NUM + 1];  // 每个村子前剩余鸭子数（从出发到最后）
+    int sell[VILLAGE_NUM];      // 每个村子卖出的鸭子数
+
+    int total = calc(0, left, sell);
+
+    printf("sum=%d\n", total);
+    for (int i = 0; i < VILLAGE_NUM; i++) {
+        printf("sell=%d", sell[i]);
+        if (i < VILLAGE_NUM - 1) printf(",");
+    }
+    printf("\n");
+
+    return 0;
+}
+
+```
+
