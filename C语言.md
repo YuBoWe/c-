@@ -2082,3 +2082,240 @@ int main() {
 
 ```
 
+## 对称字符串
+
+**题目内容：**
+
+从键盘输入一个字符串，判断是否为对称字符串，若是输出“YES”，若不是输出“NO”
+
+**输入格式：**
+
+一个字符串
+
+**输出格式：**
+
+YES or NO
+
+**输入样例1：**
+
+```
+abcdedcba[回车]
+```
+
+**输出样例1：**
+
+```
+YES[回车]
+```
+
+**输入样例2：**
+
+```
+1234432[回车]
+```
+
+**输出样例2：**
+
+```
+NO[回车]
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int is_palindrome(char *s) {
+    int left = 0;
+    int right = strlen(s) - 1;
+    while (left < right) {
+        if (s[left] != s[right]) {
+            return 0; // 不是回文
+        }
+        left++;
+        right--;
+    }
+    return 1; // 是回文
+}
+
+int main() {
+    char str[1000]; // 字符串最大长度设为 1000
+
+    scanf("%s", str); // 读入一个字符串（以回车结束）
+    
+    if (is_palindrome(str)) {
+        printf("YES\n");
+    } else {
+        printf("NO\n");
+    }
+
+    return 0;
+}
+
+```
+
+## 生成数列
+
+```c
+/* 
+ * Chinese Comment by UTF-8
+ * 
+ * 题目内容
+ * 按以下规则生成数列：
+ * 1. 前2项为2和3
+ * 2. 若(n - 1)和(n - 2)项的乘积为一位数，则n项就是这个一位数
+ * 3. 若上述乘积是两位数，则第n项和第(n + 1)分别是这个数的十位和个位数
+ * 请求出这个数列的第n项。
+ * 
+ * 分析
+ * 翻译题。模拟算法即可
+ */
+
+int get_in_list(unsigned int loca) {
+    int list[loca + 1]; // 多开一个是为了防止最后一次计算大于10
+    list[0] = 2, list[1] = 3;
+    for (int i = 2; i < loca; i++) {
+        int temp = list[i - 1] * list[i - 2];
+        if (temp >= 10) {
+            list[i++] = temp / 10;
+            list[i] = temp % 10;
+        } else {
+            list[i] = temp;
+        }
+    }
+    return list[loca - 1];
+}
+```
+
+## 数组的集合运算
+
+**题目：** 设计程序，求出一个数组和另一个数组的交集、并集，以及第一个数组对第二个数组的差集。
+
+**输入：** 第一行是第一个数组的元素个数 `len1`，第二行是空格分开的 `len1` 个元素；第三行是第二个数组的元素个数 `len2`，第四行是空格分开的 `len2` 个元素。假设数组长度均不超过 50。
+
+**输出：** 分别输出两个数组的交集、并集、差集，每个输出占一行，元素都从小到大输出。
+
+**输入样例：**
+
+```
+3
+40 20 30
+3
+20 40 50
+```
+
+**输出样例：**
+
+```
+20 40
+20 30 40 50
+30
+```
+
+```c
+#include <stdio.h>
+#define maxsize 100
+
+// 思路：这里只写最简单的写法，用嵌套循环实现即可，有复杂的写法：排序后变有序数组再去操作都会方便很多，主要是方便在查找可以用二分查找，进阶版会讲解
+// 但是代码量相同而且其实也并不高效，所以这里不做讲解，大家自行学习，出这题的目的只是为了让大家知道最简单的思路，以防考到了懵圈
+// 判断元素val 是否在 arr 数组中出现过，是的话返回1，否则返回0
+int existInArray(int val, int arr[], int length){
+    for(int i = 0; i < length; i++)
+        if(val == arr[i])
+            return 1;
+    return 0;
+}
+
+void func(int arr1[], int len1, int arr2[], int len2){
+    int interset[maxsize], unionset[maxsize], diffset[maxsize];
+    int intersetLen = 0, unionSetLen = 0, diffsetLen = 0; // 初始化
+    // 求交集:arr1 中的元素在 arr2 中出现过且之前没有存入到 interset 中的元素
+    for(int i = 0; i < len1; i++)
+        if(existInArray(arr1[i], arr2, len2) == 1 &&
+           existInArray(arr1[i], interset, intersetLen) == 0)
+            interset[intersetLen++] = arr1[i];
+    // 求并集:arr1 或者 arr2 中的元素没有在 unionset 中出现过的元素
+    for(int i = 0; i < len1; i++)
+        if(existInArray(arr1[i], unionset, unionSetLen) == 0)
+            unionset[unionSetLen++] = arr1[i];
+    for(int i = 0; i < len2; i++)
+        if(existInArray(arr2[i], unionset, unionSetLen) == 0)
+            unionset[unionSetLen++] = arr2[i];
+    // 求差集:arr1 的元素没有在 interset 中出现过且之前没有存入到 diffset 中的元素
+    for(int i = 0; i < len1; i++)
+        if(existInArray(arr1[i], interset, intersetLen) == 0 &&
+           existInArray(arr1[i], diffset, diffsetLen) == 0)
+            diffset[diffsetLen++] = arr1[i];
+    // 为了节省排版，后续的对输出数组排序和输出部分我就删掉了，完整代码可参考之前的排序题或者视频讲解
+}
+
+int main(){
+    int len1;
+    scanf("%d", &len1);
+    int arr1[len1];
+    for(int i = 0; i < len1; i++)
+        scanf("%d", &arr1[i]);
+    int len2;
+    scanf("%d", &len2);
+    int arr2[len2];
+    for(int i = 0; i < len2; i++)
+        scanf("%d", &arr2[i]);
+    return 0;
+}
+```
+
+## K 进制转十进制（必须熟练）
+
+**题目：** 输入一个整数的 K 进制字符串（字母则统一大写），输出该 K 进制的十进制表示结果。
+
+**输入：** 整数 K 和一串 K 进制表示整数的字符串，长度不会超过 32。
+
+**输出：** 转换成十进制后的结果，题目保证在 int 范围内。
+
+**输入样例：**
+
+```
+2 1001
+```
+
+**输出样例：**
+
+```
+9
+```
+
+```c
+#include <stdio.h>
+#define maxsize 32
+
+// 考察进制的底层原理，每个位乘以对应的权重后相加即可，必须熟练。
+int kBaseToDecimal(int k, char kBase[]){
+    int length = 0;
+    while(kBase[length] != '\0')
+        length++; // 计算字符数组长度，当然也可以用 strlen 函数
+    
+    // 从低位往高位遍历，乘以对应的权重后累加即可。
+    int sum = 0, weight = 1;
+    for(int i = length - 1; i >= 0; i--){
+        int bitVal = (kBase[i] >= '0' && kBase[i] <= '9') ? (kBase[i] - '0') : (kBase[i] - 'A' + 10); // 如果是字母则说明大于 10 了要处理一下
+        sum += bitVal * weight;
+        weight = weight * k; // 下一位的权重
+    }
+    return sum;
+}
+
+int main(){
+    int k;
+    char kBase[maxsize] = {0};
+    scanf("%d %s", &k, kBase);
+    int result = kBaseToDecimal(k, kBase);
+    printf("%d", result);
+    return 0;
+}
+```
+
+
+
+
+
+
+
