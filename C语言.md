@@ -1684,7 +1684,7 @@ int main() {
 
 ```
 
-## 字符串排序（必须熟练）
+## 字符串排序（必须熟练）-
 
 **题目**
 
@@ -1834,7 +1834,7 @@ int main() {
 }
 ```
 
-## 进制求值
+## 进制求值&
 
 ```c
 /* 
@@ -1875,7 +1875,7 @@ int find_number() {
 }
 ```
 
-## 十进制转K进制（必须熟练）
+## 十进制转K进制（必须熟练）&
 
 **题目：** 把十进制正整数转换为K进制字符串，题目设定K不大于16 且长度不会超过32位
 **输入：** 一个正整数n 和转换的进制K
@@ -2009,7 +2009,7 @@ int strlong(char* string) {
 }
 ```
 
-## 卖鸭子
+## 卖鸭子&
 
 **题目内容：**
 
@@ -2153,7 +2153,7 @@ int main() {
 
 ```
 
-## 生成数列
+## 生成数列&
 
 ```c
 /* 
@@ -2263,7 +2263,7 @@ int main(){
 }
 ```
 
-## K 进制转十进制（必须熟练）
+## K 进制转十进制（必须熟练）&
 
 **题目：** 输入一个整数的 K 进制字符串（字母则统一大写），输出该 K 进制的十进制表示结果。
 
@@ -2313,9 +2313,262 @@ int main(){
 }
 ```
 
+## 删除串中的重复字符&
+
+```c
+/* 
+ * Chinese Comment by UTF-8
+ * 
+ * 题目内容
+ * 输入一个长度不超过100的字符串，删除串中的重复字符。如
+ * 原串：abacaeedabcdcd
+ * 输出：abced
+ * 
+ * 分析
+ * 可以使用一个哈希表来记录。
+ * 如果使用指针传出数据，注意内存要开在堆上
+ */
+# include <string.h>
+# include <stdlib.h>
+
+void unique(char* string) {
+    unsigned int length = strlen(string);
+    char result[length] = { '\0' };
+    int writing_loca = 0;
+    char hash[256] = { 0 };
+    for (unsigned int i = 0; i < length; i++) {
+        if (hash[string[i]]) continue;
+        else {
+            result[writing_loca++] = string[i];
+            hash[string[i]] = 1;
+        }
+    }
+    memcpy(string, result, length * sizeof(char));
+}
+```
+
+## 排序（用指针）
+
+**题目内容：**
+
+用指针方法，将一维数组 `int a[10]` 中元素按从小到大顺序输出。
+
+**输入格式：**
+
+10个整数，空格隔开
+
+**输出格式：**
+
+排序后的10个数，逗号隔开
+
+**输入样例：**
+
+```
+12 34 56 43 7 89 81 11 33 90[回车]
+```
+
+**输出样例：**
+
+```
+7,11,12,33,34,43,56,81,89,90[回车]
+```
+
+```c
+#include <stdio.h>
+
+void sort(int *arr, int n) {
+    int *p1, *p2, temp;
+    for (p1 = arr; p1 < arr + n - 1; p1++) {
+        for (p2 = p1 + 1; p2 < arr + n; p2++) {
+            if (*p1 > *p2) {
+                temp = *p1;
+                *p1 = *p2;
+                *p2 = temp;
+            }
+        }
+    }
+}
+
+int main() {
+    int a[10];
+    int i;
+
+    // 输入10个整数
+    for (i = 0; i < 10; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    // 使用指针排序
+    sort(a, 10);
+
+    // 输出结果，使用逗号隔开
+    for (i = 0; i < 10; i++) {
+        if (i != 9)
+            printf("%d,", a[i]);
+        else
+            printf("%d\n", a[i]);
+    }
+
+    return 0;
+}
+
+```
+
+## 频次统计（必须熟练）
+
+**题目**
+
+输入一行不包含空格的字符串，设计程序，统计字符串中每个字符出现的次数并输出，
+根据次数从多到少输出，如果出现次数相同则根据字符对应的 ASCII 码从小到大输出。
+
+**输入**
+
+- 一行字符串，字符串长度不超过 100
+
+**输出**
+
+- 每个字符出现的次数，输出格式参考样例
+
+**输入样例**
+
+```
+bbaaffc
+```
+
+**输出样例**
+
+```
+f:3  
+a:2  
+b:2  
+c:1
+```
+
+```c
+#include <stdio.h>
+#define maxsize 101
+
+// 目的是教大家使用结构体将多个元素捆绑到一起，这种结构在统计或者记录方面作用很大
+typedef struct {
+    char ch;
+    int times;
+} countPair;
+
+// 查找字符 ch 是否已经在 dict 中记录过
+int findPair(countPair dict[], int dictLen, int ch) {
+    for (int i = 0; i < dictLen; i++) {
+        if (dict[i].ch == ch)
+            return i;
+    }
+    return -1;
+}
+
+// 统计频次并把结果都放到结构体数组 dict 中
+int countFrequency(char str[], countPair dict[], int dictLen) {
+    for (int i = 0; str[i] != '\0'; i++) {
+        int index = findPair(dict, dictLen, str[i]);
+        if (index == -1) { // 如果之前没有记录过则创建新的记录并初始化
+            dict[dictLen].ch = str[i];
+            dict[dictLen].times = 1;
+            dictLen++; // 一定要记得长度++
+        } else { // 之前记录过则次数++
+            dict[index].times++;
+        }
+    }
+    return dictLen;
+}
+
+// 对结构体排序的关键，如果 a 应该在 b 的前面就返回 1，否则返回 0
+int compare(countPair a, countPair b) {
+    if (a.times != b.times)
+        return a.times > b.times;
+    return a.ch < b.ch;
+}
+
+// 排序函数
+void Swap(countPair *a, countPair *b){
+    countPair temp = *a; *a = *b; *b = temp;
+}
+void selectSort(countPair dict[], int dictLen){
+    for (int i = 0; i < dictLen; i++){
+        int preIndex = i;
+        for (int j = i; j < dictLen; j++)
+            if (compare(dict[j], dict[preIndex])) // 注意这里参数顺序不能换
+                preIndex = j;
+        Swap(&dict[preIndex], &dict[i]); // 交换最小值和第i个元素的位置
+    }
+}
+int main(){
+    char str[maxsize] = {0};
+    countPair dict[maxsize]; // 构建一个字典记录每个字符出现的次数
+    for(int i = 0; i < maxsize; i++){
+        dict[i].ch = '\0';
+        dict[i].times = -1;
+    }
+    int dictLen = 0;
+    gets(str);
+    dictLen = countFrequency(str, dict, dictLen);
+    selectSort(dict, dictLen);
+    for(int i = 0; i < dictLen)
+        printf("%c:%d\n", dict[i].ch, dict[i].times);
+}
+```
+
+## 大整数的加法
+
+**题目：** 设计程序，求两个不超过200位的十进制非负整数的和。
+
+**输入：** 有两行，每行是一个不超过200位的非负整数，不会有多余的前导0。
+
+**输出：** 一行，即相加后的结果。结果里不能有多余的前导0。
+
+**输入样例：**
+
+```
+22222222222222222222
+33333333333333333333
+```
+
+**输出样例：**
+
+```
+55555555555555555555
+```
 
 
 
+```c
+#include <stdio.h>
+#include <string.h>
 
+void bigIntegerAdd(char sNum1[], char sNum2[]){
+    int result[201]; // 存放相加的每一位结果，相加后结果最大不会超过201
+    for(int i = 0; i < 201; i++)
+        result[i] = -1; // 初始化为-1代表没有存储数据
+    int len1 = strlen(sNum1), len2 = strlen(sNum2);
+    int addition = 0, push = addition / 10; // 用于进位
+    int reslen = 0;
+    // 注意处理长度不一的情况
+    for(int i = len1 - 1, j = len2 - 1; i >= 0 || j >= 0; i--, j--){
+        // 从低位到高位依次相加，当i或者j小于0时说明改为0
+        char a = (i < 0 ? '0' : sNum1[i]);
+        char b = (j < 0 ? '0' : sNum2[j]);
+        addition = a - '0' + b - '0' + push;
+        result[reslen++] = addition % 10;
+        push = addition / 10; // 下一个高位是否需要进位
+    }
+    if(push == 1) // 最高位的进位特殊处理
+        result[reslen++] = 1;
+    for(int i = reslen - 1; i >= 0; i--)
+        printf("%d", result[i]);
+}
 
+int main(){
+    char sNum1[201] = {0};
+    char sNum2[201] = {0}; // 用来接收用户输入的字符串形式的大整数
+    gets(sNum1); gets(sNum2);
+    bigIntegerAdd(sNum1, sNum2);
+    return 0;
+}
+```
 
