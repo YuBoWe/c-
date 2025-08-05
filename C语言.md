@@ -2335,7 +2335,7 @@ void unique(char* string) {
     unsigned int length = strlen(string);
     char result[length] = { '\0' };
     int writing_loca = 0;
-    char hash[256] = { 0 };
+    int hash[256] = { 0 };
     for (unsigned int i = 0; i < length; i++) {
         if (hash[string[i]]) continue;
         else {
@@ -2568,6 +2568,222 @@ int main(){
     char sNum2[201] = {0}; // 用来接收用户输入的字符串形式的大整数
     gets(sNum1); gets(sNum2);
     bigIntegerAdd(sNum1, sNum2);
+    return 0;
+}
+```
+
+## 大整数的乘法
+
+**题目**
+
+设计程序，求两个不超过 100 位的十进制非负整数的乘积。
+
+**输入**
+
+有两行，每行是一个不超过 100 位的非负整数，不会有多余的前导 0。
+
+**输出**
+
+一行，即相加后的结果。结果里不能有多余的前导 0。
+
+**输入样例**
+
+```
+55555
+1234567
+```
+
+**输出样例**
+
+```
+6858636985
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+// 方法1 思路：第一数的每一位都乘第二个数然后相加，就和我们平常算乘法一样
+// step1：从低位开始，第一数的第 i 个数字乘第二个数
+// step2：把结果加上取位
+// step3：把一次相乘的结果和总的结果相加
+// 目的是大家照代码看懂，完整处理的细节部分也很多，考试不适合写（来自自述）
+// 直接用最简单的写法，具体查看看视频讲解
+
+int bigIntegerMultiply(char sNum1[], int len1, char sNum2[], int len2, int result[]) {
+    for(int i = len1 - 1 ; i >= 0; i--) { // 从低位到高位按位乘
+        for(int j = len2 - 1; j >= 0; j--) { // 从 len1 + len2 -1 开始往前存
+            result[i + j + 1] += (sNum1[i] - '0') * (sNum2[j] - '0');
+        }
+    }
+
+    for(int k = len1 + len2 - 1; k >= 1; k--) { // 进位操作，k>=1 防止 k-1 越界
+        result[k - 1] += result[k] / 10;
+        result[k] = result[k] % 10;
+    }
+
+    // 如果最高位为 0 则说明结果长度是 m+n-1，需要前移一位，否则是 m+n 不用操作
+    if(result[0] == 0) {
+        for(int i = 1; i < len1 + len2; i++)
+            result[i - 1] = result[i]; // 整体前移一位
+        return len1 + len2 - 1; // 返回长度 m+n-1
+    }
+    return len1 + len2; // 返回长度 m+n
+}
+
+int main() {
+    // m 位乘 n 位 整数位数范围是 [m+n-1, m+n]
+    char sNum1[101] = {0}, sNum2[101] = {0};
+    int result[201] = {0};
+    scanf("%s", sNum1); scanf("%s", sNum2);
+    int len1 = strlen(sNum1), len2 = strlen(sNum2);
+    int resLen = bigIntegerMultiply(sNum1, len1, sNum2, len2, result);
+    for(int i = 0; i < resLen; i++)
+        printf("%d", result[i]);
+    return 0;
+}
+
+```
+
+## 查找数
+
+**题目内容**
+
+用指针方法，在一个一维数组 `int a[10]` 的元素中，查找给定的数，若找到则输出该数，若没找到，输出 `No`。
+
+**输入格式**
+
+第一行：10个整数，空格隔开
+第二行：要查找的数
+
+**输出格式**
+
+找到的数 or `No`
+
+**输入样例1**
+
+```
+11 22 43 56 78 90 76 4 2 10
+43
+```
+
+**输出样例1**
+
+```
+43
+```
+
+**输入样例2**
+
+```
+1 8 3 4 5 6 2 1 7 9
+10
+```
+
+**输出样例2**
+
+```
+No
+```
+
+```c
+#include <stdio.h>
+
+int main() {
+    int a[10];
+    int *p;        // 指针
+    int x, found = 0;
+
+    // 读入10个整数
+    for (int i = 0; i < 10; i++) {
+        scanf("%d", &a[i]);
+    }
+
+    // 读入要查找的数
+    scanf("%d", &x);
+
+    // 用指针查找
+    for (p = a; p < a + 10; p++) {
+        if (*p == x) {
+            printf("%d\n", x);
+            found = 1;
+            break;
+        }
+    }
+
+    // 如果没找到
+    if (!found) {
+        printf("No\n");
+    }
+
+    return 0;
+}
+
+```
+
+## 矩阵乘积
+
+**题目：** 给定一个 m×n*m*×*n* 的矩阵 A，再给定一个 n×p*n*×*p* 的矩阵 B（m,n,p<10*m*,*n*,*p*<10），求矩阵的乘积。
+
+**输入：** 第一行给出两个整数代表矩阵 A 的维度 m*m* 和 n*n*，随后 m*m* 行每行输入以空格分隔的 n*n* 个整数。第同时下一行给出两个整数代表矩阵 B 的维度 n*n* 和 p*p*，随后 n*n* 行每行输入以空格分隔的 p*p* 个整数。
+
+**输出：** A 和 B 相乘后的结果。
+
+**输入样例：**
+
+```
+2 3
+1 2 3
+4 5 6
+3 2
+1 0
+0 1
+1 2
+```
+
+**输出样例：**
+
+```
+4 8
+10 17
+```
+
+```c
+#include <stdio.h>
+#define maxsize 10
+
+// 考察二维数组的行列的灵敏度，思路：专门定义一个函数实现矩阵A的第i行和矩阵B的第j列相乘后，按照运算规则写循环即可
+int rowMultiCol(int A[][maxsize], int B[][maxsize], int i, int j, int n){
+    int result = 0;
+    for(int idx = 0; idx < n; idx++)
+        result += A[i][idx] * B[idx][j];
+    return result;
+}
+
+void func(int A[][maxsize], int B[][maxsize], int m, int n, int p){
+    int result[maxsize][maxsize]; // 存储结果
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < p; j++)
+            result[i][j] = rowMultiCol(A, B, i, j, n);
+    for (int i = 0; i < m; i++){ // 输出
+        for (int j = 0; j < p; j++)
+            printf("%d ", result[i][j]);
+        printf("\n");
+    }
+}
+
+int main() {
+    int m, n, p;
+    int A[maxsize][maxsize], B[maxsize][maxsize];
+    scanf("%d %d", &m, &n);
+    for (int i = 0; i < m; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &A[i][j]);
+    scanf("%d %d", &n, &p);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < p; j++)
+            scanf("%d", &B[i][j]);
+    func(A, B, m, n, p);
     return 0;
 }
 ```
