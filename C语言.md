@@ -2788,3 +2788,161 @@ int main() {
 }
 ```
 
+## 求解自然数
+
+题目：一个自然数 n 被 8 除余 1，所得的商被 8 除也余 1，再将第二次的商被 8 除后余 7，最后得到一个商为 a，又如这个自然数被 17 除余 4，所得的商被 17 除余 15，最后得到一个商是 a 的 2 倍，满足题意的自然数有很多，请编程求出其中值最小的解。
+
+**输入：** 无
+**输出：** 符合题意的自然数
+**输入样例：** 无需输入
+**输出样例：**
+
+```c
+1993
+```
+
+```c
+#include <stdio.h>
+// 类以解方程的题目，大部分情况下都是使用暴力破解找到答案，反过来推导即可
+int main() {
+    int a, n;
+    for(a = 1; ; a++) { // 不写条件其实就是死循环一直尝试
+        // 根据关系 17 的 4 进行构造 n
+        int b = 2 * a;
+        int temp = b * 17 + 15;
+        n = temp * 17 + 4;
+        // 检查 n 是否满足关于 8 的条件
+        if(n % 8 != 1) // 为什么写成!=的形式呢，因为这样可以避免嵌套多个 if
+            continue;
+        int quotient1 = (n - 1) / 8;
+        if(quotient1 % 8 != 1)
+            continue;
+        int quotient2 = (quotient1 - 1) / 8;
+        if(quotient2 % 8 != 7)
+            continue;
+        // 如果 n 满足所有条件，则输出 n，并跳出
+        printf("%d\n", n);
+        break;
+    }
+    return 0;
+}
+
+```
+
+## 求鞍点
+
+题目：给定一个 m×n 的矩阵 A，m、n 均小于 10，请依次按照索引递增的方式输出所有的鞍点索引坐标。鞍点是矩阵中某个元素在其所在行上是最大值，同时在其所在列上是最小值。
+
+**输入：**
+ 第一行给出两个整数代表矩阵 A 的维度 m 和 n，随后 m 行每行输入以空格隔开的 n 个整数
+**输出：**
+ A 的鞍点索引，如果不存在则无需输出任何结果，多个鞍点则分多行输出索引
+
+输入样例：
+
+```
+4 4
+1741
+4836
+1612
+0789
+```
+
+输出样例：
+
+```
+2 1
+```
+
+```c
+#include <stdio.h>
+#define maxsize 10
+
+// 检查某个二维数组 arr 的第 i 行第 j 列的鞍点性，思路：只要构建一个函数专门用于判断第 i 行第 j 列是否存在鞍点
+// 判断第 i 行第 j 列是否鞍点
+void exist(int arr[maxsize][maxsize], int m, int n, int i, int j){
+    int maxCol = 0; // 记录第 i 行的最大值所在的列
+    for(int idx = 0; idx < n; idx++)
+        if (arr[i][idx] > arr[i][maxCol])
+            maxCol = idx;
+
+    int minRow = 0; // 记录第 j 列的最小值所在的行
+    for(int idx = 0; idx < m; idx++)
+        if (arr[idx][j] < arr[minRow][j])
+            minRow = idx;
+
+    // 查看是否指向同一个位置
+    if(maxCol == j && minRow == i)
+        printf("%d %d\n", i, maxCol);
+}
+
+int main() {
+    int m, n, arr[maxsize][maxsize];
+    scanf("%d %d", &m, &n);
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            scanf("%d", &arr[i][j]);
+    for(int i = 0; i < m; i++)
+        for(int j = 0; j < n; j++)
+            exist(arr, m, n, i, j);
+    return 0;
+}
+
+```
+
+## 统计字符串出现次数
+
+**题目内容：**
+ 从键盘输入两个字符串，输出第二个串在第一个串中出现的次数。如果没有，输出“No”。
+
+**输入格式：**
+ 输入两个字符串
+
+**输出格式：**
+ 输出第二个串在第一个串中出现的次数。
+ 如果没有，输出 No
+
+输入样例1：
+
+```
+This is his book
+is
+```
+
+输出样例1：
+
+```
+3
+```
+
+输入样例2：
+
+```
+This is my book
+at
+```
+
+输出样例2：
+
+```
+No
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int countSubstr(char *str1, char *str2) {
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    int count = 0;
+    for (int i = 0; i <= len1 - len2; i++) {
+        if (strncmp(&str1[i], str2, len2) == 0) {
+            count++;
+        }
+    }
+    return count;
+}
+
+```
+
