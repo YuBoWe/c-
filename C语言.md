@@ -3115,3 +3115,151 @@ LinkList reverseLinkList(LinkList head){
 
 ```
 
+## 井底之蛙
+
+**题目**：
+ 一只长度不计的青蛙位于 n 米深的井的底部。它每次向上爬 u 米，但是必须休息一次才能再次向上爬。在休息的时候，它滑落 d 米。之后它将重复向上爬和休息的过程。青蛙爬出井口需要至少多少次？如果青蛙正好爬到井的顶部，我们也认为它已经爬出井口。
+
+**输入**：
+ 三个整数 n, u, d，与题目中的 n, u, d 一致
+
+**输出**：
+ 爬出井口的时间
+
+**输入样例**：
+
+```
+10 3 2
+```
+
+**输出样例**：
+
+```
+8
+```
+
+```c
+#include <stdio.h>
+// 用循环模拟这个过程直到跳出来为止，也比较简单
+int main(){
+    int n = 0, u = 0, d = 0;
+    scanf("%d %d %d", &n, &u, &d);
+    int time = 0, dist = 0;
+    // 模拟过程
+    while (1){
+        dist += u; time++;
+        if (dist >= n)
+            break; // 到出口的情况
+        dist -= d;
+    }
+    printf("%d", time); // 输出得到的结果
+    return 0;
+}
+
+```
+
+## 塔车问题
+
+**题目**：
+ 假设在道路上只有三种车，小车长 1 米，中车长 2 米，大车长 3 米，同时假设搭车总长度为 n 米，请设计程序，计算出三种车的数量可能的总数量。例如，当输入是 3 时，输出应该为 3，因为所有的方案是“小车 3 个”、“小车 1 个，中车 1 个”、“大车 1 个”，共 3 种。
+
+**输入**：
+ 一个整数 n，代表道路的长度。
+
+**输出**：
+ 所有可能的总数量。
+
+**输入样例**：
+
+```
+5
+```
+
+**输出样例**：
+
+```
+5
+```
+
+```c
+#include <stdio.h>
+// 比较简单，暴力破解，考试的时候没有太好的别的思路就别多想
+// 先做出来然后去做别的题目，后面有时间再回头优化
+int main(){
+    int n;
+    scanf("%d", &n);
+    int sum = 0;
+    for(int i = 0; i <= n; i++)
+        for(int j = 0; j < n; j++)
+            for(int k = 0; k < n; k++)
+                if(n == i + 2 * j + 3 * k)
+                    sum += 1;
+    printf("%d", sum);
+    return 0;
+}
+
+```
+
+## 链表的排序
+
+**题目**：实现链表从大到小排序
+
+**输入**：
+ 第一行输入一个整数 n 代表链表原本的节点个数，第二行输入 n 个整数
+
+**输出**：
+ 从大到小排序后的链表
+
+**输入样例**：
+
+```
+5
+2 4 3 5 1
+```
+
+**输出样例**：
+
+```
+5->4->3->2->1->NULL
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct node{
+    int data;
+    struct node *next;
+}LNode, *LinkList;
+
+// 链表的选择排序
+void selectSortLinkList(LinkList head){
+    for(LNode *iPreNode = head; iPreNode->next != NULL; iPreNode = iPreNode->next){
+        LNode *maxPreNode = iPreNode;
+        LNode *maxNode = maxPreNode->next; // 记录从 iPreNode 开始的最大值节点
+        for(LNode *jPreNode = iPreNode; jPreNode->next != NULL; jPreNode = jPreNode->next){
+            if(jPreNode->next->data > maxNode->data){
+                maxPreNode = jPreNode;
+                maxNode = jPreNode->next;
+            }
+        }
+        // 直接把最大值插入到 iPreNode->next 的位置即可，不需要像数组一样交换
+        maxPreNode->next = maxNode->next;
+        maxNode->next = iPreNode->next;
+        iPreNode->next = maxNode; // 插入三部曲
+    }
+}
+// main 函数部分在后面
+int main(){
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for(int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+    LinkList head = createLinkList(arr, n); // 创建和输出部分代码不再书写
+    selectSortLinkList(head);
+    displayLinkList(head);
+    return 0;
+}
+
+```
+
