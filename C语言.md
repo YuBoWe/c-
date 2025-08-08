@@ -2946,3 +2946,172 @@ int countSubstr(char *str1, char *str2) {
 
 ```
 
+## 字母加密对照表
+
+题目内容： 先定义一张字母加密对照表。将需要加密的一行文字输入加密程序，程序根据加密表中的对应关系，可以很简单地将输入的文字加密输出，对于表中未出现的字符则不加密。
+
+字母加密对照表 输入 a b c d e i k; w 输出 d w k; i a b c e
+
+输入格式： 字母
+
+输出格式： 字母
+
+输入样例1: abc[回车]
+
+输出样例1: dwk[回车]
+
+输入样例2: de[回车]
+
+输出样例2: ;i[回车]
+
+**算法思想：**
+
+读取加密对照表，分隔出原字符与加密字符（通过 `;` 分隔）。
+
+使用一个映射（如数组）建立原字符到加密字符的关系。
+
+对待加密字符串中的每个字符：
+
+- 如果该字符存在于加密表中，则输出对应加密字符；
+- 否则，原样输出。
+
+```c
+#include <stdio.h>
+#include <string.h>
+
+int main() {
+    char line[200];      // 存储加密规则整行
+    char map[128] = {0}; // ASCII 映射表
+
+    // 读取加密对照表
+    fgets(line, sizeof(line), stdin);
+    line[strcspn(line, "\n")] = '\0'; // 去掉换行符
+
+    // 找到两个分号位置
+    char *first = strchr(line, ';');
+    char *second = strchr(first + 1, ';');
+
+    // 拆分出原字符和加密字符
+    *first = '\0';
+    *second = '\0';
+    char *origin = line;
+    char *encrypt = first + 1;
+
+    // 建立映射
+    for (int i = 0; origin[i] != '\0' && encrypt[i] != '\0'; i++) {
+        map[(int)origin[i]] = encrypt[i];
+    }
+
+    // 读取待加密字符串
+    char text[200];
+    fgets(text, sizeof(text), stdin);
+    text[strcspn(text, "\n")] = '\0';
+
+    // 输出加密后的字符串
+    for (int i = 0; text[i] != '\0'; i++) {
+        if (map[(int)text[i]] != 0)
+            putchar(map[(int)text[i]]);
+        else
+            putchar(text[i]);
+    }
+    putchar('\n');
+
+    return 0;
+}
+
+```
+
+## 百钱买百鸡
+
+**题目：**
+公鸡 5 文钱一只，母鸡 3 文钱一只，小鸡 3 只一文钱。用 100 文钱买一百只鸡，其中公鸡、母鸡、小鸡都必须要有，问公鸡、母鸡、小鸡要买多少只刚好凑足 100 文钱，设计程序，列举出所有的满足题意的方案。
+
+**输入：**
+ 无
+
+**输出：**
+ 按照一定格式输出所有的方案，要求所有方案按照公鸡数量递增的顺序陈列
+
+**输出样例：**
+
+```http
+公鸡,母鸡,小鸡有: 4 18 78  
+公鸡,母鸡,小鸡有: 8 11 81  
+公鸡,母鸡,小鸡有: 12 4 84
+```
+
+```c
+#include <stdio.h>
+
+// 暴力枚举每个情况看是否满足条件即可
+int main() {
+    int sumPrice, sumNumber; // 定义数量变量和价格变量
+    // 公鸡最少 1 只，最多 100/5-2=18 只
+    for (int i = 1; i <= 20; i++) {
+        // 母鸡最少 1 只，最多 100/3-2=31 只
+        for (int j = 1; i + j <= 100; j++) {
+            // 小鸡最少 3 只，最多 100-公鸡-母鸡，而且必须按照 3 的倍数买
+            for (int k = 3; i + j + k <= 100; k = k + 3) {
+                sumPrice = k / 3 + j * 3 + 5 * i;
+                sumNumber = i + j + k;
+                if (sumPrice == 100 && sumNumber == 100)
+                    printf("公鸡,母鸡,小鸡有:%d %d %d\n", i, j, k);
+            }
+        }
+    }
+    return 0;
+}
+```
+
+## 链表的逆序
+
+**题目：** 实现链表的逆序
+
+**输入：** 第一行输入一个整数 n 代表链表原本的节点个数，第二行输入 n 个整数代表每个节点的 data 值
+
+**输出：** 逆序后的链表
+
+**输入样例：**
+
+```
+5
+1 2 3 4 5
+```
+
+输出样例：
+
+```c
+5->4->3->2->1->NULL
+```
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+typedef struct node{
+    int data; //存储该节点的数据
+    struct node *next; // 指向下一个结点的指针
+}LNode, *LinkList;
+
+//通过头插法实现链表的逆序，返回值为逆序后的链表的头结点，具体可查看视频讲解
+LinkList reverseLinkList(LinkList head){
+    if(head==NULL || head->next->next == NULL)
+        return head; // 链表为空或者只有一个节点的情况直接返回
+
+    // 把链表分成两部分，head 所指向的链表已经头插，subhead 所指向的链表还没头插
+    LNode *subHead = head->next->next;
+    head->next->next = NULL;
+    // 链表的逆序和数组不同无法直接通过索引取到结点
+    // 因此不使用双指针，而是更好理解的头插法
+    while(subHead != NULL){
+        LNode *tmp = subHead;
+        //tmp 记录先走结点；主要是先让 subhead 往后走否则等下操作完链表就断了
+        subHead = subHead->next;
+        tmp->next = head->next;
+        head->next = tmp; // 插入 2 部曲，前驱节点为头头结点
+    }
+    return head;
+}
+//main 函数在下一页
+
+```
+
