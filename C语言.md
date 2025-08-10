@@ -3263,55 +3263,6 @@ int main(){
 
 ```
 
-## 乘积数列
-
-**题目：** 已知某数列前两项为 2 和 3，其后继项根据当前的前两项的乘积按下列规则生成：
-
-若乘积为一位数，则该乘积就是数列的后继项；若乘积为两位数，则乘积的十位和个位数字依次作为数列的后继项，三位数以此类推例如：当 N=10，求出该数列的前十项为：2 3 6 1 8 8 6 4 2，已知乘积结果的数码长度小于 100，编写程序，求数列的第 n 项。
-
-**输入样例：** 10
-
-**输出样例：** 2 3 6 1 8 8 6 4 2 4
-
-```c
-#include <stdio.h>
-// 考察大家对新问题的理解，代码重点就是考察用循环拆分每一位，/和%方法
-void multiplySequence(int result[], int n) {
-    if (n >= 1)
-        result[0] = 2; // 特殊处理 n==1
-    if (n >= 2)
-        result[1] = 3; // 特殊处理 n==2
-
-    // 初始化最后两位和 result 目前已经存放的元素个数
-    int first = result[0], second = result[1], curlen = 2;
-    while (curlen < n) { // 用while会更好，因为不是curlen的增长不固定
-        int times = first * second; // 最后两个数位的乘积结果也是两位数很好处理
-        // 拆分两个数位
-        int lowerBit = times % 10, higherBit = times / 10;
-        // 在还需要填入数字的前提下把位存入，注意区分乘积结果一位和两位的情况
-        if (curlen < n && times < 10) // 只有一位的情况
-            result[curlen++] = lowerBit;
-        if (curlen < n && times >= 10) { // 有两位的情况
-            result[curlen++] = higherBit; // 先放高位
-            // 在还需要填充的前提下放低位，否则不要放，比如 n=4 的时候
-            if (curlen < n)
-                result[curlen++] = lowerBit;
-        }
-        // 更新 first, second 为最新的最后两位
-        first = result[curlen - 2]; second = result[curlen - 1];
-    }
-}
-int main() {
-    int n;
-    scanf("%d", &n);
-    int result[n];
-    multiplySequence(result, n);
-    for (int i = 0; i < n; i++)
-        printf("%d ", result[i]);
-    return 0;
-}
-```
-
 ## 约瑟夫环问题（数组，必须熟练）
 
 **题目：** n 个人围成一圈，编号从 1 到 n，从第一个人从 1 开始报数，数到 m 的人出列，再由下一个人重新从 1 开始报数，数到 m 的人再出圈，依次类推，直到所有的人都出圈，请输出依次出圈人的编号。
