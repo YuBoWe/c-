@@ -2432,7 +2432,7 @@ int main() {
 **输入样例**
 
 ```
-bbaaffc
+fbbaaffc
 ```
 
 **输出样例**
@@ -2446,73 +2446,125 @@ c:1
 
 ```c
 #include <stdio.h>
-#define maxsize 101
+#include <string.h>
 
-// 目的是教大家使用结构体将多个元素捆绑到一起，这种结构在统计或者记录方面作用很大
 typedef struct {
     char ch;
-    int times;
-} countPair;
+    int cnt;
+} Item;
 
-// 查找字符 ch 是否已经在 dict 中记录过
-int findPair(countPair dict[], int dictLen, int ch) {
-    for (int i = 0; i < dictLen; i++) {
-        if (dict[i].ch == ch)
-            return i;
-    }
-    return -1;
-}
+void freqCount(const char *s) {
+    Item arr[256];   // 最多256个不同字符
+    int len = 0;
 
-// 统计频次并把结果都放到结构体数组 dict 中
-int countFrequency(char str[], countPair dict[], int dictLen) {
-    for (int i = 0; str[i] != '\0'; i++) {
-        int index = findPair(dict, dictLen, str[i]);
-        if (index == -1) { // 如果之前没有记录过则创建新的记录并初始化
-            dict[dictLen].ch = str[i];
-            dict[dictLen].times = 1;
-            dictLen++; // 一定要记得长度++
-        } else { // 之前记录过则次数++
-            dict[index].times++;
+    // 统计频次
+    for (int i = 0; s[i]; i++) {
+        int found = 0;
+        for (int j = 0; j < len; j++) {
+            if (arr[j].ch == s[i]) {
+                arr[j].cnt++;
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            arr[len].ch = s[i];
+            arr[len].cnt = 1;
+            len++;
         }
     }
-    return dictLen;
-}
 
-// 对结构体排序的关键，如果 a 应该在 b 的前面就返回 1，否则返回 0
-int compare(countPair a, countPair b) {
-    if (a.times != b.times)
-        return a.times > b.times;
-    return a.ch < b.ch;
-}
+    // 选择排序
+    for (int i = 0; i < len - 1; i++) {
+        int maxIdx = i;
+        for (int j = i + 1; j < len; j++) {
+            if (arr[j].cnt > arr[maxIdx].cnt ||
+               (arr[j].cnt == arr[maxIdx].cnt && arr[j].ch < arr[maxIdx].ch)) {
+                maxIdx = j;
+            }
+        }
+        if (maxIdx != i) {
+            Item tmp = arr[i];
+            arr[i] = arr[maxIdx];
+            arr[maxIdx] = tmp;
+        }
+    }
 
-// 排序函数
-void Swap(countPair *a, countPair *b){
-    countPair temp = *a; *a = *b; *b = temp;
-}
-void selectSort(countPair dict[], int dictLen){
-    for (int i = 0; i < dictLen; i++){
-        int preIndex = i;
-        for (int j = i; j < dictLen; j++)
-            if (compare(dict[j], dict[preIndex])) // 注意这里参数顺序不能换
-                preIndex = j;
-        Swap(&dict[preIndex], &dict[i]); // 交换最小值和第i个元素的位置
+    // 输出
+    for (int i = 0; i < len; i++) {
+        printf("%c:%d\n", arr[i].ch, arr[i].cnt);
     }
 }
-int main(){
-    char str[maxsize] = {0};
-    countPair dict[maxsize]; // 构建一个字典记录每个字符出现的次数
-    for(int i = 0; i < maxsize; i++){
-        dict[i].ch = '\0';
-        dict[i].times = -1;
-    }
-    int dictLen = 0;
-    gets(str);
-    dictLen = countFrequency(str, dict, dictLen);
-    selectSort(dict, dictLen);
-    for(int i = 0; i < dictLen)
-        printf("%c:%d\n", dict[i].ch, dict[i].times);
+
+int main() {
+    char s[101];
+    scanf("%s", s);
+    freqCount(s);
+    return 0;
 }
+
 ```
+
+或者用qsort排序
+
+```c
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+typedef struct {
+    char ch;
+    int cnt;
+} Item;
+
+// 比较函数：按次数降序，次数相同则按字符升序
+int cmp(const void *a, const void *b) {
+    if (((Item *)b)->cnt != ((Item *)a)->cnt) {
+        return ((Item *)b)->cnt - ((Item *)a)->cnt; // 次数多的在前
+    }
+    return ((Item *)a)->ch - ((Item *)b)->ch;       // ASCII 小的在前
+}
+
+void freqCount(const char *s) {
+    Item arr[256];  // 最多256个不同字符
+    int len = 0;
+
+    // 统计频次
+    for (int i = 0; s[i]; i++) {
+        int found = 0;
+        for (int j = 0; j < len; j++) {
+            if (arr[j].ch == s[i]) {
+                arr[j].cnt++;
+                found = 1;
+                break;
+            }
+        }
+        if (!found) {
+            arr[len].ch = s[i];
+            arr[len].cnt = 1;
+            len++;
+        }
+    }
+
+    // 排序
+    qsort(arr, len, sizeof(Item), cmp);
+
+    // 输出
+    for (int i = 0; i < len; i++) {
+        printf("%c:%d\n", arr[i].ch, arr[i].cnt);
+    }
+}
+
+int main() {
+    char s[101];
+    scanf("%s", s);
+    freqCount(s);
+    return 0;
+}
+
+```
+
+
 
 ## 大整数的加法
 
@@ -3302,6 +3354,40 @@ int main() {
     scanf("%d %d", &n, &m);
     simulate2(n, m);
     return 0;
+}
+```
+
+## 矩阵查找
+
+---
+
+已知一个 n 阶矩阵 A 和一个目标值 k。该矩阵无重复元素，每行从左到右升序排列，每列从上到下升序排列。请设计一个在时间上尽可能高效的算法，判断矩阵中是否存在目标值 k。例如，矩阵为
+
+\[
+\begin{bmatrix}
+1 & 4 & 7 \\
+2 & 5 & 8 \\
+3 & 6 & 9
+\end{bmatrix}
+\]
+
+目标值为 8，判断存在。要求：
+
+1) 给出算法的基本设计思想。
+2) 根据设计思想，采用 C 或 C++ 语言描述算法，关键之处给出注释。
+3) 说明你的算法的时间复杂度和空间复杂度。
+
+---
+
+```c
+int func(int A[][], int n, int k) {
+    int i = 0, j = n - 1;
+    while (i < n && j >= 0) { // 离开边界时查找结束
+        if (A[i][j] == k) return 1; // 查找成功
+        else if (A[i][j] > k) j--; // 向左移动，在该行内寻找目标值
+        else i++; // 向下移动，查找下一个更大的元素
+    }
+    return 0; // 查找失败
 }
 ```
 
