@@ -2263,7 +2263,7 @@ int main(){
 }
 ```
 
-## K 进制转十进制（必须熟练）&
+## K 进制转十进制（必须熟练）&-
 
 **题目：** 输入一个整数的 K 进制字符串（字母则统一大写），输出该 K 进制的十进制表示结果。
 
@@ -2518,6 +2518,11 @@ typedef struct {
 } Item;
 
 // 比较函数：按次数降序，次数相同则按字符升序
+// a-b
+// 返回值 < 0：认为 a 应该排在 b 前面
+// 返回值 = 0：认为 a 和 b 顺序无所谓（逻辑上相等）
+// 返回值 > 0：认为 b 应该排在 a 前面
+//
 int cmp(const void *a, const void *b) {
     if (((Item *)b)->cnt != ((Item *)a)->cnt) {
         return ((Item *)b)->cnt - ((Item *)a)->cnt; // 次数多的在前
@@ -2773,7 +2778,7 @@ int main() {
 
 ```
 
-## 矩阵乘积-
+## 矩阵乘积
 
 **题目：** 给定一个 m×n*m*×*n* 的矩阵 A，再给定一个 n×p*n*×*p* 的矩阵 B（m,n,p<10*m*,*n*,*p*<10），求矩阵的乘积。
 
@@ -3510,5 +3515,172 @@ int main(){
 
 ```
 
+## 基本功：找区间（必须熟练）
 
+**题目：** 给定一行英文句子字符串，单词之间用空格分隔，请你按照输出格式输出每个单词所在的索引区间。
+
+**输入：** 一行字符串 `str`
+
+**输出：** 每个单词所在的索引区间，用方括号隔开，格式参考输出样例
+
+**输入样例：**
+
+```
+this is a book
+```
+
+**输出样例：**
+
+```
+[0,3][5,6][8,8][10,13]
+```
+
+```c
+#include <stdio.h>
+//后续双指针字符串题型最重要的部分,一定要学会找区间的方法
+//只有先精准锁定区间,才能对这个区间进行操作,考试也是这么考
+void getRegion(char str[]){
+    int left = 0; //记录左区间并初始化为0
+    while(str[left] != '\0'){
+        int right = left; //记录右区间初始化为left
+        //while 的通用含义:只要xxx,就做xxx, 非常实用
+        //一定注意在内部的while 一定不要忘记外部的while 的前提条件
+        while(str[right] != '\0' && str[right] != ' ')
+            right++;
+        //至此找到了区间[left,right-1]就是我们需要的部分!
+        //接下来就可以写处理的代码,目前我们这题只是输出区间
+        printf("[%d,%d]", left, right - 1);
+        //处理代码写完后,更新left 的位置
+        left = right + 1;
+    }
+}
+int main(){
+    char str[101] = {0}; //一定要初始化
+    gets(str);
+    getRegion(str);
+    return 0;
+}
+```
+
+
+
+## 基本功：分割并存储数据（必须熟练）
+
+**题目**：给定一行英文句子字符串，单词之间用空格分隔，请你把每个单词存储到可自行设定的结构体中，并从后往前逐一输出每个单词，用空格分隔开
+
+**输入**：一行字符串 str
+
+**输出**：从后往前逐一输出每个单词，用空格分隔开
+
+**输入样例**：
+
+```
+this is a book
+```
+
+**输出样例**：
+
+```
+book a is this
+```
+
+```c
+#include <stdio.h>
+#define maxsize 100
+//在上一题的基础上继续添加代码
+//为了给下一题做铺垫,这里定义一个结构体存储数据
+typedef struct {
+    char word[20]; //假设单词最长为20
+}List;
+
+//定义结构体数组用于存储单词,全局变量都初始化为0了
+List wordList[maxsize];
+int length;
+
+void saveWords(char str[]){
+    int left = 0; //记录左区间并初始化为0
+    while(str[left] != '\0'){
+        int right = left; //记录右区间初始化为left
+        //while 的通用含义:只要xxx,就做xxx, 非常实用
+        //一定注意在内部的while一定不要忘记外部的while 的前提条件
+        while(str[right] != '\0' && str[right] != ' ')
+            right++;
+        //至此找到了区间[left,right-1]就是我们需要的部分
+        //接下来就可以写处理的代码逻辑, 这道题是即可存入结构体
+        //这里用for循环存入单词
+        for(int i = 0, j = left; j < right; i++, j++)
+            wordList[length].word[i] = str[j];
+        length++; //不要忘记长度加1
+        //处理代码写完后,更新left 下一次开始的位置
+        left = right + 1;
+    }
+}
+
+int main(){
+    char str[101] = {0}; //一定要初始化
+    gets(str);
+    saveWords(str);
+    for(int i = length - 1; i >= 0; i--) //反向输出
+        printf("%s ", wordList[i].word);
+    return 0;
+}
+```
+
+
+
+## 奇偶分类
+
+**题目：** 给定一个包含 n 个元素的数组，请你设计一个函数 `classify(int arr[], int n)`，把所有的奇数放到偶数前面。
+
+**输入：** 第一行是一个整数 n，代表输入元素的个数；第二行输入 n 个元素，用空格分隔。
+
+**输出：** 分类后的数组（OJ 想通过的话则必须使用具有稳定性的方法）。
+
+**输入样例：**
+
+```
+5
+1 2 3 4 5
+```
+
+**输出样例：**
+
+```
+1 3 5 2 4
+```
+
+```c
+#include <stdio.h>
+
+// 题目很简单作为双指针引入，但是过 OJ 需要具有稳定性，当然考试肯定不会要求
+// 如果是想要过 OJ 则需要具有稳定性的方法，参考基础版的"左小右大"，大家自己探索啦
+void Swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+// 在开头和结尾分别设置双指针方法实现，不具有稳定性
+void classify(int arr[], int n) {
+    int head = 0, tail = n - 1;
+    while (head < tail) {
+        while (head < tail && arr[head] % 2 == 1)
+            head++; // 让 head 从前往后找到第一个偶数
+        while (head < tail && arr[tail] % 2 == 0)
+            tail--; // 让 tail 从后往前找到第一个奇数
+        Swap(&arr[head], &arr[tail]); // 交换位置
+    }
+}
+
+int main() {
+    int n;
+    scanf("%d", &n);
+    int arr[n];
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+    classify(arr, n);
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+}
+```
 
