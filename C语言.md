@@ -3684,3 +3684,328 @@ int main() {
 }
 ```
 
+
+
+## 基本功：操作数据（必须熟练）
+
+题目：给定一行英文句子字符串，单词之间用空格分隔，请你统计每个单词出现的次数，并优先根据出现次数从多到少排列依次输出，如果出现次数相同则按照字符串比较规则从小到大排列输出，输出格式参考样例（和基础版题目 “频次统计” 相同）
+
+输入：一行字符串 str
+
+输出：根据单词的出现次数从多到少依次一行行输出，用 “单词：次数” 的格式，英文冒号
+
+输入样例：my dad and my mom and me
+
+输出样例：
+and:2
+my:2
+dad:1
+me:1
+mom:1
+
+```c
+#include <stdio.h>
+#include <string.h>
+#define maxsize 100
+#define maxwordLen 20
+//在上一题的基础上继续添加代码，给之前的结构体加上计数然后结构体排序即可
+//具体参考可基础版“频次统计”，题目基本一模一样，只是这里需要我们拆分单词
+typedef struct {
+    char word[maxwordLen]; //假设单词最长为20
+    int times;
+}List;
+
+//定义结构体数组用于存储单词,全局变量都初始化为0了
+List wordList[maxsize];
+int length;
+
+//查找单词之前是否出现过,出现过则返回索引否则返回-1
+int findWord(char word[maxwordLen]){
+    for(int i = 0; i < length; i++)
+        if(strcmp(wordList[i].word, word) == 0)
+            return i;
+    return -1;
+}
+
+void countWords(char str[]){
+    int left = 0; //记录左区间并初始化为0
+    while(str[left] != '\0'){
+        int right = left; //记录右区间初始化为left
+        //while 的通用含义:只要xxx,就做xxx, 非常实用
+        //一定注意在内部的while一定不要忘记外部的while 的前提条件
+        while(str[right] != '\0' && str[right] != ' ')
+            right++;
+        //至此找到了区间[left,right-1]就是我们需要的部分!
+        //处理的代码逻辑, 这里是统计计数, 所以需要先检查之前是否记录过
+        char temp[maxWordLen] = {0};
+        for(int i = 0, j = left; j < right; i++, j++)
+            temp[i] = str[j]; //存入单词到temp中
+        int index = findWord(temp);
+        if(index == -1){ //如果之前没有记录过则创建新的记录并初始化
+            strcpy(wordList[length].word, temp);
+            wordList[length].times++;
+            length++; //初始化, 一定记得长度也要加1
+        }
+        else
+            wordList[index].times++;
+        //处理代码写完后,更新left 下一次开始的位置
+        left = right + 1;
+    }
+}
+int main(){
+    char str[101] = {0}; //一定要初始化
+    gets(str);
+    countWords(str);
+    //后续就是对wordList 结构体排序和输出的代码和基础版的频次统计题目是一样的
+    //这里为了节约排版就不写啦,大家也可以查看视频讲解
+    return 0;
+}
+```
+
+## 字符串删除（必须熟练）
+
+题目：编写程序，删除字符串中所有指定的子字符串
+
+输入：输入总共两行，第一行是原字符串，第二行是需要删除的字符串，字符串的长度均小于 100 且不包含换行符
+输出：删除指定字符串后的新的字符串结果
+
+输入样例：
+abcdeeddee
+dee
+
+输出样例: abcd
+
+```c
+#include <stdio.h>
+#include <string.h>
+//思路:先找到子串所在区间,然后覆盖即可,覆盖操作基础版已学过
+//所以找区间永远是最重要的,找到区间后的操作是可以随意改变的
+//判断str 从start 位置开始是否能够和subStr 完全匹配
+int foo(char str[],int len,int start,char subStr[],int sublen){
+    for(int i = 0; i < sublen; i++)
+        if(start + i >= len || subStr[i] != str[start + i])
+            return 0;
+    return 1;
+}
+//双指针删除所有子串
+void deleteSubStr(char str1[], char str2[]){
+    int len1 = strlen(str1), len2 = strlen(str2);
+    int start = 0;
+    while(str1[start] != '\0'){
+        //检查从start 开始的[start,start+sublen-1]区间是否和子串匹配
+        if(foo(str1, len1, start, str2, len2)){
+            //用后面部分整体前移覆盖子串
+            for(int i = start + len2; i < len1; i++)
+                str1[i - len2] = str1[i];
+            //注意要减少原串的长度,同时start 不需要移动
+            len1 = len1 - len2;
+        }
+        else //没有匹配则尝试下一个区间[start+1,start+sublen]
+            start++;
+    }
+    str1[len] = '\0'; //添加字符串结束符
+}
+int main(){
+    char str[101] = {0}, subStr[101] = {0};
+    gets(str); gets(subStr);
+    deleteSubStr(str, subStr);
+    printf("%s", str);
+    return 0;
+}
+```
+
+
+
+## 字符串的替换
+
+题目：编写程序，给定三个字符串 s1, s2, s3, 实现把字符串 s1 中出现子串 s2 的位置都替换成 s3, 字符串长度都小于 100, 且确保空间足够不会出现越界的情况
+输入：三行字符串分别代表 s1, s2, s3, 每行以回车作为结束符
+输出：替换后的新的字符串 s1
+
+输入样例:
+abcd
+cd
+bcd
+
+输出样例: abbcd
+
+```c
+#include <stdio.h>
+#include <string.h>
+//思路:和字符串删除类似, 字符串的替换=删除子串+插入新串, 难度稍大
+//但是千万注意 start 位置更新, 不然可能无限死循环
+//判断 str 从 start 位置开始是否能够和 subStr 完全匹配
+int foo(char str1[], int len1, int start, char str2[], int len2)
+{
+    for(int i = 0; i < len2; i++)
+        if(start + i >= len1 || str2[i] != str1[start + i])
+            return 0;
+    return 1;
+}
+//替换 str 中的 subStr 为 newStr
+void replace(char str1[], char str2[], char str3[]){
+    int len1 = strlen(str1), len2 = strlen(str2);
+    int len3 = strlen(str3), start = 0; //初始化
+    while(str1[start] != '\0'){
+        //检查从 start 开始的[start,start+sublen-1]区间是否和子串匹配
+        if(foo(str1, len1, start, str2, len2)){
+            //用后面部分整体前移覆盖子串实现删除
+            for(int i = start + len2; i < len1; i++)
+                str1[i - len2] = str1[i];
+            //然后在 start 位置插入新的字符串,先整体右移再插入
+            for(int i = len1 - 1; i >= start; i--)
+                str1[i + len3] = str1[i]; //整体右移腾出空间
+            for(int i = 0; i < len3; i++)
+                str1[start + i] = str3[i]; //插入
+            //注意要更新原串的长度, 同时 start 也要准确更新
+            len1 = len1 - len2 + len3;
+            start = start + len3;//这里为什么这么写可以看视频讲解
+        } else start++; ////没有匹配则尝试下一个区间[start+1,start+sublen]
+    }
+    str1[len1] = '\0'; //添加字符串结束符
+}
+int main(){
+    char str1[101] = {0}, str2[101] = {0}, str3[101] = {0};
+    fgets(str1, sizeof(str1), stdin);
+    fgets(str2, sizeof(str2), stdin);
+    fgets(str3, sizeof(str3), stdin);
+    replace(str1, str2, str3);
+    printf("%s", str1);
+    return 0;
+}
+```
+
+## 提取整数
+
+题目：给定一个含有数字字符和非数字字符的字符串，串长不超过 80，将其中连续的数字字符转换为一个整数，如果连续的数字字符个数超过 5 个则以 5 个数字字符为一组进行转换
+编写函数: int extract (char *str, int arr [])，函数返回值为放入 a 数组中整数的个数，将转换后生成的整数依次存放到整型数组 arr 中并输出，用空格隔开
+输入：一个含有数字字符和非数字字符的字符串
+输出：提取后的数组中的所有元素
+
+输入样例: a123bc45\786#96def123456789
+输出样例: 123 45 786 96 12345 6789
+
+```c
+#include <stdio.h>
+#define maxsize 81
+//思路很简单，关键依旧是找区间
+//一旦发现数字就开始往后找到数字的最后一个位置从而确定该数字所在区间
+//有了区间后则可以把字符转为整数，
+//定义一个专门把[start, start+Length-1]的整数字符转为数值的函数
+//这个参考"% 进制转十进制"
+int foo(char str[], int start, int end){
+    int sum = 0, weight = 1; //按位的权重
+    for(int i = end - 1; i >= start; i--){
+        sum += (str[i] - '0') * weight;
+        weight *= 10; //权重增加
+    }
+    return sum;
+}
+
+int bar(char ch){
+    return (ch >= '0' && ch <= '9');
+}
+
+int func(char str[], int result[]){
+    int resLen = 0; //存放结果的数组长度
+    int start = 0;
+    while(str[start] != '\0'){
+        while(str[start] != '\0' && !bar(str[start]))
+            start++;
+        int end = start + 1; //查找该数字的最后一个位
+        while(str[end] != '\0' && bar(str[end]))
+            end++;
+        //至此找到了数字的区间为[start,end-1],接下来就是区间处理
+        //判断长度是否大于5个,如果大于5则需要拆分解析,否则直接解析即可
+        int rlen = end - start;
+        while(rlen > 5){ //如果大于5 则五个一组解析
+            result[resLen++] = foo(str, start, start + 5);
+            start = start + 5;
+            rlen = rlen - 5; //更新位置和长度
+        }
+        //小于等于5的情况
+        result[resLen++] = foo(str, start, end);
+        //更新start
+        start = end;
+    }
+    return resLen-1;
+}
+int main() {
+    char str[maxsize] = {'\0'};
+    int result[maxsize];
+    fgets(str, maxsize, stdin);
+    int length = func(str, result);
+    for(int i = 0; i < length; i++)
+        printf("%d ", result[i]);
+    return 0;
+}
+
+```
+
+
+
+## 晨跑够不够
+
+**题目：** 给定一行全是字符 `0` 或者字符 `1` 的字符串，其中 `1` 代表该同学当天有在晨跑，`0` 代表没有晨跑，请你编程判断该同学是否连续 `5` 天没有晨跑，是的话输出 `fail`，否则输出 `success`
+
+例如：`1100110001010101010010000001`，则输出 `fail`，因为记录出现了连续 `5` 次为 `0` 的情况。
+
+**输入：** 字符串代表晨跑记录
+
+**输出：** 如果没有出现连续 `5` 天为 `0` 的情况则输出 `"success"`，否则输出 `"fail"`
+
+**输入样例：**
+
+```
+1100110000
+```
+
+**输出样例：**
+
+```
+success
+```
+
+```c
+#include <stdio.h>
+#include <string.h>
+#define maxsize 100
+
+// 题目本质：找出连续的'0'最长的长度，直接利用双指针找区间的方式就可以解决
+int func(char data[]){
+    int start = 0, len = strlen(data);
+    while(start < len){
+        while(start < len && data[start] != '0')
+            start++; // 找到第一次出现0的位置
+        // 此时start指向了第一次遇到的0,end找连续0的右区间
+        int end = start + 1;
+        while(end < len && data[end] == '0')
+            end++;
+        // 此时可得到连续0的区间为[start, end-1]
+        // 计算连续没跑步的天数并判断是否大于等于5天
+        int no = end - start;
+        if(no >= 5)
+            return 0;
+        // 否则更新start位置
+        start = end + 1;
+    }
+    return 1; // 没有出现过大于等于5天的情况
+}
+int main(){
+    char data[maxsize] = {0};
+    scanf("%s", data);
+    printf("%s", func(data) ? "success" : "fail");
+    return 0;
+}
+```
+
+
+
+
+
+
+
+
+
+
+
