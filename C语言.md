@@ -281,7 +281,7 @@ int main() {
 }
 ```
 
-## 二次方程的根-
+## 二次方程的根
 
 **题目：** 编写程序，求方程的根，用三个函数分别求当 b2−4ac*b*2−4*a**c* 大于 0、等于 0、和小于 0 时的根，并输出结果。
 
@@ -3707,57 +3707,59 @@ mom:1
 #include <stdio.h>
 #include <string.h>
 #define maxsize 100
-#define maxwordLen 20
+#define maxlen 20
 //在上一题的基础上继续添加代码，给之前的结构体加上计数然后结构体排序即可
 //具体参考可基础版“频次统计”，题目基本一模一样，只是这里需要我们拆分单词
 typedef struct {
-    char word[maxwordLen]; //假设单词最长为20
+    char word[maxlen]; //假设单词最长为20
     int times;
 }List;
 
-//定义结构体数组用于存储单词,全局变量都初始化为0了
-List wordList[maxsize];
-int length;
-
 //查找单词之前是否出现过,出现过则返回索引否则返回-1
-int findWord(char word[maxwordLen]){
-    for(int i = 0; i < length; i++)
-        if(strcmp(wordList[i].word, word) == 0)
+int foo(char* str, List words[], int len){
+    for(int i = 0; i < len; i++)
+        if(strcmp(words[i].word, str) == 0)
             return i;
     return -1;
 }
 
-void countWords(char str[]){
-    int left = 0; //记录左区间并初始化为0
+void countWords(char *str, List words[], int *len){
+    int left = 0;
     while(str[left] != '\0'){
-        int right = left; //记录右区间初始化为left
-        //while 的通用含义:只要xxx,就做xxx, 非常实用
-        //一定注意在内部的while一定不要忘记外部的while 的前提条件
+        // 跳过连续的空格（处理多个空格分隔的情况）
+        while(str[left] == ' ') left++;
+        if(str[left] == '\0') break; // 避免末尾空格导致的空循环
+        int right = left;
         while(str[right] != '\0' && str[right] != ' ')
             right++;
-        //至此找到了区间[left,right-1]就是我们需要的部分!
-        //处理的代码逻辑, 这里是统计计数, 所以需要先检查之前是否记录过
-        char temp[maxWordLen] = {0};
-        for(int i = 0, j = left; j < right; i++, j++)
-            temp[i] = str[j]; //存入单词到temp中
-        int index = findWord(temp);
-        if(index == -1){ //如果之前没有记录过则创建新的记录并初始化
-            strcpy(wordList[length].word, temp);
-            wordList[length].times++;
-            length++; //初始化, 一定记得长度也要加1
+      
+        char temp[maxlen] = {0};
+        // 限制单词长度，防止溢出
+        for(int i = 0, j = left; j < right && i < maxlen-1; i++, j++)
+            temp[i] = str[j];
+        
+        int index = foo(temp, words, *len);
+        if(index == -1 && *len < maxsize){ // 避免数组越界
+            strcpy(words[*len].word, temp);
+            words[*len].times = 1;
+            (*len)++;
         }
-        else
-            wordList[index].times++;
-        //处理代码写完后,更新left 下一次开始的位置
-        left = right + 1;
+        else if(index != -1){
+            words[index].times++;
+        }
+        left = right;
     }
 }
 int main(){
     char str[101] = {0}; //一定要初始化
-    gets(str);
-    countWords(str);
-    //后续就是对wordList 结构体排序和输出的代码和基础版的频次统计题目是一样的
-    //这里为了节约排版就不写啦,大家也可以查看视频讲解
+    List words[maxsize];
+    int len = 0;
+    fgets(str, sizeof(str), stdin);
+    str[strcspn(str, "\n")] = '\0';
+    countWords(str, words, &len);
+    for(int i = 0; i<len; i++){
+        printf("%s: %d\n", words[i].word, words[i].times);
+    }
     return 0;
 }
 ```
@@ -3999,7 +4001,161 @@ int main(){
 }
 ```
 
+## 非公有元素
 
+题目：设计程序，找出两个非递减数组元素的非公有元素，并按照递增形式输出，不要重复输出相同元素
+
+输入：第一行是一个整数 m，代表输入元素的个数，第二行输入 m 个元素，代表第一个数组，用空格分隔，第三行是一个整数 n，代表输入元素的个数，第四行输入 n 个元素，代表第二个数组
+
+输出：两个数组的非公有元素
+
+输入样例:
+5
+1 2 3 3 5
+4
+1 2 4 10
+
+输出样例: 3 4 5 10
+
+```c
+#include <stdio.h>
+#include <stdlib.h>
+
+int foo(int arr[], int n){
+    int i = 0, k = i+1;
+    for(int j = i+1; j<n; j++){
+        if(arr[j] != arr[i]){
+            arr[k++] = arr[j];
+            i++;
+        }
+    }
+    return k;
+}
+
+void func(int arr1[], int len1, int arr2[], int len2){
+    //先给数组自身去重
+    len1 = foo(arr1, len1);
+    len2 = foo(arr2, len2);
+    //定义两个指针i,j并分情况讨论
+    int i = 0, j = 0;
+    while(i < len1 && j < len2){
+        if(arr1[i] < arr2[j]){
+            printf("%d ", arr1[i]);
+            i++;
+        }
+        else if(arr1[i] > arr2[j]){
+            printf("%d ", arr2[j]);
+            j++;
+        }
+        else{ //相同的元素不输出直接跳过
+            i++; j++;
+        }
+    }
+    while(i < len1) //输出剩下元素必然不会重复
+        printf("%d ", arr1[i++]);
+    while(j < len2)
+        printf("%d ", arr2[j++]);
+}
+int main(){
+    int len1, len2;
+    scanf("%d", &len1);
+    int arr1[len1];
+    for(int i = 0; i < len1; i++)
+        scanf("%d", &arr1[i]);
+    scanf("%d", &len2);
+    int arr2[len2];
+    for(int i = 0; i < len2; i++)
+        scanf("%d", &arr2[i]);
+    func(arr1, len1, arr2, len2);
+    return 0;
+}
+```
+
+## 汉诺塔
+
+有三根柱子 A、B、C，A 柱上从下到上按大小顺序依次叠放着 n 个盘子（n 为正整数）。要求将这 n 个盘子全部从 A 移到 C，每次只能移动一个盘子，并且在移动过程中，任何时刻都不能将大盘子压在小盘子上。
+
+请编写一个 C 语言程序：
+
+1. 输入盘子数 n；
+2. 输出每一步的移动过程（例如 `A -> C` 表示从 A 移动一个盘子到 C）；
+3. 最后输出总的移动步数。
+
+**输入格式：**
+ 输入一个正整数 n (1 ≤ n ≤ 25)。
+
+**输出格式：**
+
+- 输出盘子移动的全过程；
+- 最后一行输出总步数。
+
+**输入样例：**
+
+```
+3
+```
+
+**输出样例：**
+
+```
+移动序列（A -> C，借助 B）：
+A -> C
+A -> B
+C -> B
+A -> C
+B -> A
+B -> C
+A -> C
+总步数：7
+```
+
+
+
+
+
+用递归：把 `n` 个盘子从柱 `A` 移到柱 `C`，借助柱 `B`。步骤是
+
+1. 先把上面 `n-1` 个盘子从 `A` 移到 `B`；
+2. 把第 `n` 个大盘从 `A` 移到 `C`；
+3. 再把 `n-1` 个盘子从 `B` 移到 `C`。
+    递归出口是 `n == 1`，直接把盘从 `A` 移到 `C`。移动步数为 `2^n - 1`。
+
+```c
+#include <stdio.h>
+
+void hanoiGame(int n) {
+    // 内部递归函数
+    void move(int k, char a, char b, char c) {
+        if (k == 1) {
+            printf("%c -> %c\n", a, c);
+            return;
+        }
+        move(k - 1, a, c, b);
+        printf("%c -> %c\n", a, c);
+        move(k - 1, b, a, c);
+    }
+
+    // 调用递归
+    printf("移动序列（A -> C，借助 B）：\n");
+    move(n, 'A', 'B', 'C');
+
+    // 计算总步数
+    unsigned long long steps = (1ULL << n) - 1ULL;
+    printf("总步数：%llu\n", steps);
+}
+
+int main(void) {
+    int n;
+    printf("输入盘子数量 n：");
+    if (scanf("%d", &n) != 1 || n <= 0 || n > 25) {
+        puts("请输入 1~25 的正整数。");
+        return 0;
+    }
+    hanoiGame(n);
+    return 0;
+}
+
+```
 
 
 
