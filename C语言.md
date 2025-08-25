@@ -791,7 +791,7 @@ typedef struct node_stu {
 }node_stu;
 
 int compare_stu(const void* a, const void* b) { // 考虑到本题目score是float，故不可轻易返回差值。
-    return (student*a)->score < (student*b)->score ? 1 : -1;
+    return ((student*)a)->score < ((student*)b)->score ? 1 : -1;
 }
 
 node_stu* sort_student(student* array, unsigned int length) {
@@ -4240,5 +4240,127 @@ int main(){
 }
 ```
 
+## 79. 递归求最大公因数
 
+题目：编写一个递归函数，实现求两个正整数 m，n 的最大公约数
+输入：两个整数，用空格隔开
+输出：这两个整数的最大公约数
+输入样例：20 15
+输出样例：5
+
+```c
+#include <stdio.h>
+//递归求最大公因数其实就是把辗转相除法的循环形式写成了递归
+//辗转相除法不熟悉的同学得去了解一下，回去看之前的讲解代码，这里只写递归的形式
+int gcd(int a, int b){
+    if(b == 0)
+        return a;
+    else{
+        int remainder = a % b;
+        return gcd(b, remainder);
+    }
+}
+int main(){
+    int x, y;
+    scanf("%d %d", &x, &y);
+    int result = gcd(x, y);
+    printf("%d", result);
+    return 0;
+}
+```
+
+## 80.递归求二进制
+
+题目：输入一个十进制整形数字，使用递归的方法，把该十进制转为二进制
+输入：一个十进制整数
+输出：整数的二进制形式，长度不会超过 200
+输入样例：8
+输出样例：1000
+
+```c
+#include <stdio.h>
+//也不过是把十进制转换成二进制的循环形式写成递归了
+//二进制都存入result数组中，返回值代表长度
+void func(int n, int result[], int *length){
+    if(n == 0)
+        return;
+    result[*length] = n % 2; //取余2
+    (*length)++; //下一个存放到result的索引
+    func(n / 2, result, length); //除2并继续递归直到n为0
+}
+int main(){
+    int n;
+    scanf("%d", &n), length = 0;
+    int result[200];
+    for(int i = 0; i < 200; i++)
+        result[i] = -1; //初始化
+    func(n, result, &length);
+    for(int i = length - 1; i >= 0; i--)
+        printf("%d", result[i]); //逆序输出
+    return 0;
+}
+```
+
+## 81. 递归求累加和
+
+题目：编写一个递归函数，求 1 + 1/2 - 1/3 + 1/4... 的前 n 项和，保留 3 位小数
+输入：一个整数 n
+输出：求和后的结果，保留三位小数
+输入样例: 2
+输出样例: 1.500
+
+```c
+#include <stdio.h>
+//非常简单就不写详细啦，递归公式 S(n) = 1/n * (-1)^n + S(n - 1)，边界条件：S(1) = 1
+double Sn(int n) {
+    if (n == 1)
+        return 1.0;
+    int sign = (n % 2 == 0 ? 1 : -1); // 正负号
+    return (1.0 / n) * sign + Sn(n - 1);
+}
+int main() {
+    int n;
+    scanf("%d", &n);
+    double result = Sn(n);
+    printf("%.3f", result);
+    return 0;
+}
+```
+
+## 82 递归求累加和 plus
+
+**题目：** 编写一个递归函数，求 2/1+3/2+5/3+8/5+13/8+...的前 n 项和，保留 3 位小数。
+
+**输入：** 一个整数 n
+
+**输出：** 求和后的结果，保留三位小数
+
+**输入样例：** 3
+
+**输出样例：** 5.167
+
+```c
+#include <stdio.h>
+// 结合了斐波那契数列的求和，难度更难一些，所以要先用斐波那契求出分子分母然后再递归
+double fibonacci(int n){
+    if (n == 1 || n == 2) // 构造首项为2,3 的斐波那契，因为题目的第一项为2/1
+        return n + 1;
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+double func(int n){
+    if (n == 1)
+        return 2.0; // 第1 项特殊处理
+    return func(n - 1) + fibonacci(n) / fibonacci(n - 1); // 递归计算前 n 项和
+}
+// main 函数在后面
+```
+
+```c
+int main(){
+    int n;
+    scanf("%d", &n);
+    printf("%.3f", func(n)); // 保留3 位小数输出
+    return 0;
+}
+```
 
