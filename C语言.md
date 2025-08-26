@@ -798,7 +798,7 @@ node_stu* sort_student(student* array, unsigned int length) {
     if (!length) return 0;
     qsort(array, length, sizeof(student), compare_stu);//排序
     node_stu* res = 0;
-    for (unsigned int i = 0; i < length; ++i) {//尾插
+    for (unsigned int i = 0; i < length; ++i) {//head插
         node_stu* temp = (node_stu*)malloc(sizeof(node_stu));
         temp->next = res;
         temp->value.no = array[i].no;
@@ -928,7 +928,7 @@ int main() {
 }
 ```
 
-## 22.使用链栈转换8进制
+## -22.使用链栈转换8进制
 
 ```c
 /* 
@@ -4360,6 +4360,105 @@ int main(){
     int n;
     scanf("%d", &n);
     printf("%.3f", func(n)); // 保留3 位小数输出
+    return 0;
+}
+```
+
+## 83 递归求自然数
+
+**题目：** 自然数 $ e = 1 + \frac{1}{1!} + \frac{1}{2!} + \frac{1}{3!} + ... + \frac{1}{n!} $，编写程序，构造递归函数，计算 e 的值，从第三项开始，如果当前项和前一项的差值小于给定的阈值 lambda 时则停止累加，输出结果保留 10 位小数。
+
+**输入：** 给定的阈值 lambda
+
+**输出：** 达到边界条件后的 e的值
+
+**输入样例：** 0.001（用户输入的给定的阈值 lambda）
+
+**输出样例：** 2.7182539683
+
+```c
+#include <stdio.h>
+
+// 求数列的第 n 项，An = 1/(n-1)!
+double foo(int n){ 
+    int result = 1;
+    for(int i = 1; i < n; i++)
+        result *= i;
+    return 1.0 / result;
+}
+
+// 递归函数：lambda 阈值，前一项 pre，当前项 cur，累计和 sum，项数 cnt
+double func(double lambda, double pre, double cur, double sum, int cnt){
+    if(pre - cur < lambda)
+        return sum;
+    else{
+        sum = sum + cur;
+        pre = cur; 
+        cnt++;
+        cur = foo(cnt); 
+        return func(lambda, pre, cur, sum, cnt);
+    }
+}
+
+int main(){
+    double lambda;
+    scanf("%lf", &lambda);
+    // 初始 sum = 2 (前两项 1/0! + 1/1! = 1 + 1)，cnt = 3 从第三项开始
+    double ans = func(lambda, foo(2), foo(3), 2.0, 3);
+    printf("%.10lf", ans);
+    return 0;
+}
+
+```
+
+## 84 多少瓶汽水
+
+**题目：** 有这样一道智力题，某商店规定：三个空汽水瓶可以换一瓶汽水。小张手上有十个空汽水瓶，她最多可以换多少瓶汽水喝？”，答案是 5 瓶，方法如下：先用 9 个空瓶子换 3 瓶汽水，喝掉 3 瓶满的，喝完以后 4 个空瓶子，用 3 个再换一瓶，喝掉这瓶满的，这时候剩 2 个空瓶子。然后你让老板先借给你一瓶汽水，喝掉这瓶满的，喝完以后用 3 个空瓶子换一瓶满的还给老板。注意是空汽水瓶，且可以找老板借，但是要还等同数量。
+
+设计程序，帮助小张计算，如果小张手上有 n 个空汽水瓶，最多可以换多少瓶汽水喝？
+
+**输入：** 一个正整数 n，代表小张手上有 n 个空汽水瓶
+
+**输出：** 最多可以喝的汽水瓶数，如果一瓶也喝不到，输出 0
+
+**输入样例：** 10
+
+**输出样例：** 5
+
+```c
+#include <stdio.h>
+// 思路：题目直接给了递推关系，题目比较简单，
+// 每次剩下的瓶子都是之前换来的饮料瓶子+剩下的没换的饮料瓶子
+// 唯一要注意的边界 n=2 时，也是可以换一瓶汽水的
+int func(int n){
+    if (n == 0 || n == 1)
+        return 0;
+    else if (n == 2) // 代表可以向老板借一瓶
+        return 1;
+    else{
+        int num = n / 3; // 喝了多少瓶
+        int remain = n % 3 + n / 3; // 还剩多少空瓶子
+        num += func(remain);
+        return num;
+    }
+}
+int func2(int n){ // 这里我也写个非递归形式的给大家参考
+    int num = n / 3;
+    int remain = n / 3 + n % 3;
+    while(remain >= 2){
+        if(remain == 2)
+            return num + 1;
+        num += remain / 3;
+        // 每次剩下的瓶子都是之前换来的饮料瓶子+剩下的没换的饮料瓶子
+        num = num / 3 + num % 3;
+    }
+    return remain;
+}
+int main(){
+    int n;
+    scanf("%d", &n);
+    int result = func2(n);
+    printf("%d", result);
     return 0;
 }
 ```
