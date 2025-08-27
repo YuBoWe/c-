@@ -4463,3 +4463,49 @@ int main(){
 }
 ```
 
+
+
+## 85 多少只小鸡
+
+**题目：** 小明家中有一只小鸡，小明每过 3 个月就会再买另外新的小母鸡，数量和 3 个月前的小鸡数量一样，所以数量是“1 1 1 2 3 4”这样的规律递增，假设母鸡不会死亡，设计程序，帮小明算算，第 n 个月时家里有多少只母鸡。
+
+**输入：** 一个正整数 n，代表第 n 个月
+
+**输出：** 家里母鸡的总数量
+
+**输入样例：** 5
+
+**输出样例：** 3
+
+```c
+#include <stdio.h>
+// 要看清题目的本质：改编版斐波那契数列，只不过是 4 项一起递推而已
+// 递归的方法如下
+int func(int n){
+    if(n == 1 || n == 2 || n == 3)
+        return 1;
+    return func(n - 1) + func(n - 3);
+}
+// 开辟长度为 n 的数组的方法就不写了太简单了
+// 这里也写一下滚筒法，设置四个变量
+int func2(int n){
+    if(n <= 3)
+        return 1;
+    int first, second, third, forth; // 定义四个变量滚筒
+    first = second = third = 1; // 最开始一只小鸡 1 1 1 2 3 4
+    for(int i = 4; i <= n; i++){
+        forth = third + first; // 注意这里必须先写，滚筒顺序不能错
+        first = second;
+        second = third;
+        third = forth;
+    }
+    return forth;
+}
+int main(){
+    int n;
+    scanf("%d", &n);
+    printf("%d", func(n));
+    return 0;
+}
+```
+
