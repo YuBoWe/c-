@@ -928,7 +928,7 @@ int main() {
 }
 ```
 
-## -22.使用链栈转换8进制
+## 22.使用链栈转换8进制
 
 ```c
 /* 
@@ -1165,15 +1165,16 @@ int main() {
 # include <stdio.h>
 # include <string.h>
 
-void __reverse_output(char* _str, unsigned int loca, unsigned int length) {
+void __reverse_output(char* _str, unsigned int local, unsigned int length) {
     if (loca >= length) return;
-    __reverse_output(_str, loca + 1, length);
+    __reverse_output(_str, local + 1, length);
     printf("%c", _str[loca]);
 }
 
 void reverse_output() {
     char _str[1024];
-    gets(_str);
+    fgets(_str, sizeof(_str), stdin);
+    _str[1024] = '\0';
     __reverse_output(_str, 0, strlen(_str));
 }
 ```
@@ -1585,6 +1586,7 @@ int main() {
 
 # include <stdio.h>
 
+// 递归版本
 void divid(unsigned int target) {
     for (unsigned int i = 2; i <= target; i++) {
         if (i == target) {
@@ -1596,6 +1598,27 @@ void divid(unsigned int target) {
         }
     }
 }
+
+// 非递归版本
+#include <stdio.h>
+
+void func(int n){
+    if (n == 1) return;
+    for (int i = 2; i * i <= n; i++) {
+        while (n % i == 0) {
+            printf("%d ", i);
+            n /= i;   // 关键：缩小 n
+        }
+    }
+    if (n > 1) printf("%d", n); // 最后剩下的质因数
+}
+
+int main(void){
+    int n = 60;
+    func(n);  // 输出：2 2 3 5
+    return 0;
+}
+
 ```
 
 ## 35.寻找特殊偶数
@@ -1684,7 +1707,7 @@ int main() {
 
 ```
 
-## 36.字符串排序（必须熟练）-
+## 36.字符串排序（必须熟练）
 
 **题目**
 
@@ -1720,7 +1743,7 @@ b
 #define maxsize 81
 
 // 考虑能否对复合结构排序，字符串的比较规则参考上一个题目的视频讲解
-int cmpStr(char s1[], char s2[]) {
+int foo(char s1[], char s2[]) {
     int result = 0; // 记录比较的结果，初始化假设相等
     int i = 0;      // 从索引0开始挨位比较
     while(s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
@@ -1732,11 +1755,11 @@ int cmpStr(char s1[], char s2[]) {
     return result;
 }
 
-void selectSort(char str[][maxsize], int n){
+void func(char str[][maxsize], int n){
     for (int i = 0; i < n - 1; i++) {
         int minIndex = i;
         for (int j = i + 1; j < n; j++)
-            if (cmpStr(str[j], str[minIndex]) == -1) // 排序基准
+            if (foo(str[j], str[minIndex]) == -1) // 排序基准
                 minIndex = j;
 
         // 交换最小值和第 i 个元素的位置
@@ -1796,7 +1819,7 @@ int main(){
 
 ```
 
-## 38.奇数求和
+## 38.奇数求和-
 
 **题目内容：** 用递归算法实现，输入整数 n (n>0)，求 1+3+5+7....+(2*n-1) 的和
 
@@ -1962,7 +1985,6 @@ int compare(medalList a, medalList b) {
     return strcmp(a.name, b.name) == -1;
 }
 
-// 一页装不下这么多代码，排序函数和 main 函数都在下一页，尽可能让大家看得完整些
 // 从大到小排序，有了基准就改一下数据的类型就行了
 void selectionSort(medalList arr[], int n) {
     for (int i = 0; i < n; i++) {
@@ -1990,7 +2012,7 @@ int main() {
 }
 ```
 
-## 42.求字符串长度的递归函数
+## 42.求字符串长度的递归函数-
 
 ```c
 /* 
