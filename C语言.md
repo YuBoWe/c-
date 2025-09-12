@@ -2012,7 +2012,7 @@ int main() {
 }
 ```
 
-## 42.求字符串长度的递归函数-
+## 42.求字符串长度的递归函数
 
 ```c
 /* 
@@ -2285,7 +2285,7 @@ int main(){
 }
 ```
 
-## 47.K 进制转十进制（必须熟练）&-
+## 47.K 进制转十进制（必须熟练）&
 
 **题目：** 输入一个整数的 K 进制字符串（字母则统一大写），输出该 K 进制的十进制表示结果。
 
@@ -2832,7 +2832,7 @@ int main() {
 #define maxsize 10
 
 // 考察二维数组的行列的灵敏度，思路：专门定义一个函数实现矩阵A的第i行和矩阵B的第j列相乘后，按照运算规则写循环即可
-int rowMultiCol(int A[][maxsize], int B[][maxsize], int i, int j, int n){
+int foo(int A[][maxsize], int B[][maxsize], int i, int j, int n){
     int result = 0;
     for(int idx = 0; idx < n; idx++)
         result += A[i][idx] * B[idx][j];
@@ -2843,7 +2843,7 @@ void func(int A[][maxsize], int B[][maxsize], int m, int n, int p){
     int result[maxsize][maxsize]; // 存储结果
     for(int i = 0; i < m; i++)
         for(int j = 0; j < p; j++)
-            result[i][j] = rowMultiCol(A, B, i, j, n);
+            result[i][j] = foo(A, B, i, j, n);
     for (int i = 0; i < m; i++){ // 输出
         for (int j = 0; j < p; j++)
             printf("%d ", result[i][j]);
@@ -2867,7 +2867,7 @@ int main() {
 }
 ```
 
-## 55.求解自然数
+## 55.求解自然数-
 
 题目：一个自然数 n 被 8 除余 1，所得的商被 8 除也余 1，再将第二次的商被 8 除后余 7，最后得到一个商为 a，又如这个自然数被 17 除余 4，所得的商被 17 除余 15，最后得到一个商是 a 的 2 倍，满足题意的自然数有很多，请编程求出其中值最小的解。
 
@@ -3172,25 +3172,7 @@ typedef struct node{
 }LNode, *LinkList;
 
 //通过头插法实现链表的逆序，返回值为逆序后的链表的头结点，具体可查看视频讲解
-LinkList reverseLinkList(LinkList head){
-    if(head==NULL || head->next->next == NULL)
-        return head; // 链表为空或者只有一个节点的情况直接返回
 
-    // 把链表分成两部分，head 所指向的链表已经头插，subhead 所指向的链表还没头插
-    LNode *subHead = head->next->next;
-    head->next->next = NULL;
-    // 链表的逆序和数组不同无法直接通过索引取到结点
-    // 因此不使用双指针，而是更好理解的头插法
-    while(subHead != NULL){
-        LNode *tmp = subHead;
-        //tmp 记录先走结点；主要是先让 subhead 往后走否则等下操作完链表就断了
-        subHead = subHead->next;
-        tmp->next = head->next;
-        head->next = tmp; // 插入 2 部曲，前驱节点为头头结点
-    }
-    return head;
-}
-//main 函数在下一页
 
 ```
 
@@ -3312,21 +3294,22 @@ typedef struct node{
 
 // 链表的选择排序
 void selectSortLinkList(LinkList head){
-    for(LNode *iPreNode = head; iPreNode->next != NULL; iPreNode = iPreNode->next){
-        LNode *maxPreNode = iPreNode;
-        LNode *maxNode = maxPreNode->next; // 记录从 iPreNode 开始的最大值节点
-        for(LNode *jPreNode = iPreNode; jPreNode->next != NULL; jPreNode = jPreNode->next){
-            if(jPreNode->next->data > maxNode->data){
-                maxPreNode = jPreNode;
-                maxNode = jPreNode->next;
+    for(LNode *p = head; p->next != NULL; p = p->next){
+        LNode *maxPre = p;
+        LNode *max = maxPre->next; // 记录从 p 开始的最大值节点
+        for(LNode *q = p; q->next != NULL; q = q->next){
+            if(q->next->data > max->data){
+                maxPre = q;
+                max = q->next;
             }
         }
-        // 直接把最大值插入到 iPreNode->next 的位置即可，不需要像数组一样交换
-        maxPreNode->next = maxNode->next;
-        maxNode->next = iPreNode->next;
-        iPreNode->next = maxNode; // 插入三部曲
+        // 插入最大值到 p->next 的位置
+        maxPre->next = max->next;
+        max->next = p->next;
+        p->next = max;
     }
 }
+
 // main 函数部分在后面
 int main(){
     int n;
@@ -3342,7 +3325,7 @@ int main(){
 
 ```
 
-## 63.约瑟夫环问题（数组，必须熟练）
+## 63.约瑟夫环问题（数组，必须熟练）-
 
 **题目：** n 个人围成一圈，编号从 1 到 n，从第一个人从 1 开始报数，数到 m 的人出列，再由下一个人重新从 1 开始报数，数到 m 的人再出圈，依次类推，直到所有的人都出圈，请输出依次出圈人的编号。
 

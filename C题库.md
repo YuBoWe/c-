@@ -343,3 +343,50 @@ int main(void) {
 - **空间复杂度**：O(1)，只使用了常量存储。
 
 📌 运行结果：最少桃子数是 **3121**。
+
+
+
+## 9. 求0—7所能组成的奇数个数
+
+思路
+
+奇数的末位必须是 {1,3,5,7} → 4 种。
+
+最高位（如果有多位数）不能为 0 → 7 种。
+
+中间位可以是 0–7 → 8 种。
+
+对于位数 `n`：
+
+- 如果 `n=1`：4 种。
+- 如果 `n≥2`：共有 `7 × 8^(n-2) × 4` 种。
+
+遍历 1~k 位，累加结果
+
+```c
+#include <stdio.h>
+#include <math.h>
+
+// 计算0-7组成的k位以内奇数个数
+long long func(int k) {
+    long long sum = 0;
+    if (k >= 1) sum += 4; // 1位数
+    for (int n = 2; n <= k; n++) {
+        sum += 7 * (long long)pow(8, n - 2) * 4;
+    }
+    return sum;
+}
+
+int main(void) {
+    int k;
+    printf("请输入最大位数k: ");
+    scanf("%d", &k);
+
+    long long result = func(k);
+    printf("0-7能组成的所有奇数个数为: %lld\n", result);
+
+    return 0;
+}
+
+```
+
