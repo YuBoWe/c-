@@ -3325,7 +3325,7 @@ int main(){
 
 ```
 
-## 63.约瑟夫环问题（数组，必须熟练）-
+## 63.约瑟夫环问题（数组，必须熟练）
 
 **题目：** n 个人围成一圈，编号从 1 到 n，从第一个人从 1 开始报数，数到 m 的人出列，再由下一个人重新从 1 开始报数，数到 m 的人再出圈，依次类推，直到所有的人都出圈，请输出依次出圈人的编号。
 
@@ -3569,7 +3569,7 @@ int main(){
 
 
 
-## 68.基本功：分割并存储数据（必须熟练）
+## 68.基本功：分割并存储数据（必须熟练）-
 
 **题目**：给定一行英文句子字符串，单词之间用空格分隔，请你把每个单词存储到可自行设定的结构体中，并从后往前逐一输出每个单词，用空格分隔开
 
@@ -3788,9 +3788,9 @@ dee
 //思路:先找到子串所在区间,然后覆盖即可,覆盖操作基础版已学过
 //所以找区间永远是最重要的,找到区间后的操作是可以随意改变的
 //判断str 从start 位置开始是否能够和subStr 完全匹配
-int foo(char str[],int len,int start,char subStr[],int sublen){
-    for(int i = 0; i < sublen; i++)
-        if(start + i >= len || subStr[i] != str[start + i])
+int foo(char *str1,int len1,int start,char str2,int len2){
+    for(int i = 0; i < len2; i++)
+        if(start + i >= len1 || str2[i] != str1[start + i])
             return 0;
     return 1;
 }
