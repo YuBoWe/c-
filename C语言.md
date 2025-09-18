@@ -70,19 +70,19 @@ int main() {
 
 # include <stdio.h>
 
-void __reverse(char* str, int left, int right) {
+void foo(char* str, int left, int right) {
     if (left >= right) return;
     char temp_char;
     temp_char = str[left]; // 交换字符
     str[left++] = str[right];
     str[right--] = temp_char;
-    __reverse(str, left, right); // 递归传递调用
+    foo(str, left, right); // 递归传递调用
 }
 
-void reverse(char* str) { // 驱动函数
+void bar(char* str) { // 驱动函数
     int length = 0; 
     for (length = 0; str[length]; length++); // 获取字符串长度
-    __reverse(str, 0, length - 1);
+    foo(str, 0, length - 1);
     for (int i=0; i < length; i++){
         printf("%c", str[i]);
     }
@@ -91,7 +91,7 @@ void reverse(char* str) { // 驱动函数
 int main(){
     char str[1024];
     gets(str);
-    reverse(str);
+    bar(str);
     return 0;
 }
 ```
@@ -470,7 +470,7 @@ int main() {
     char str[maxLine]; // 接受从文件读取的一行数据，假设一行最大为100个字符
     while (fgets(str, maxLine, fp) != NULL) { // 读取一行数据
         // 注意 fgets 是回车作为标志符的，因为一行到下一行就是回车
-        for (int i = 0; str[i] != '\n'; i++) {
+        for (int i = 0; str[i] != '\n' && str[i] != '\0'; i++) {
             if (str[i] == '/' && str[i + 1] == '/') {
                 str[i] = '\n'; str[i + 1] = '\0'; // 遇到注释符号则直接截断
                 break;
@@ -564,7 +564,7 @@ int main() {
 
 
 
-## 13.整数逆序
+## 13.整数逆序-
 
 ```c
 /* 
