@@ -564,7 +564,7 @@ int main() {
 
 
 
-## 13.整数逆序-
+## 13.整数逆序
 
 ```c
 /* 
@@ -1421,7 +1421,7 @@ node_stu* sort_student(student* array, unsigned int length) {
 }
 ```
 
-## 31.输入 5 个单词，按**从大到小的字典序**排序并输出
+## 31.输入 5 个单词，按**从大到小的字典序**排序并输出-
 
 ```c
 #include <stdio.h>
