@@ -3261,7 +3261,7 @@ int main(){
 
 ```
 
-## 62.链表的排序-
+## 62.链表的排序
 
 **题目**：实现链表从大到小排序
 
@@ -3788,7 +3788,7 @@ dee
 //思路:先找到子串所在区间,然后覆盖即可,覆盖操作基础版已学过
 //所以找区间永远是最重要的,找到区间后的操作是可以随意改变的
 //判断str 从start 位置开始是否能够和subStr 完全匹配
-int foo(char *str1,int len1,int start,char str2,int len2){
+int foo(char *str1,int len1,int start,char* str2,int len2){
     for(int i = 0; i < len2; i++)
         if(start + i >= len1 || str2[i] != str1[start + i])
             return 0;
@@ -3951,7 +3951,7 @@ int main() {
 
 
 
-## 74.晨跑够不够
+## 74.晨跑够不够-
 
 **题目：** 给定一行全是字符 `0` 或者字符 `1` 的字符串，其中 `1` 代表该同学当天有在晨跑，`0` 代表没有晨跑，请你编程判断该同学是否连续 `5` 天没有晨跑，是的话输出 `fail`，否则输出 `success`
 
