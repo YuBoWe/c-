@@ -41,4 +41,4 @@ media/
 *.ntvs*
 *.njsproj
 
-.learning-k8s
+learning-k8s/
