@@ -1,0 +1,44 @@
+# ========================
+# 1. 操作系统自动生成的文件
+# ========================
+.DS_Store
+Thumbs.db
+
+# ========================
+# 2. 环境变量与敏感配置 (非常重要！)
+# ========================
+.env
+.env.local
+*.pem
+credentials.json
+
+# ========================
+# 3. 前端项目 (如 Vue/TypeScript)
+# ========================
+node_modules/
+dist/
+build/
+npm-debug.log*
+yarn-error.log*
+
+# ========================
+# 4. 后端项目 (如 Python/Django)
+# ========================
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+.venv/
+db.sqlite3
+media/
+
+# ========================
+# 5. IDE 与编辑器配置
+# ========================
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+
+.learning-k8s
