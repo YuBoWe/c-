@@ -49,7 +49,7 @@ int main() {
 }
 ```
 
-## 3.字符串反向保存
+## +3.字符串反向保存
 
 ```c
 /* 
@@ -653,7 +653,7 @@ int main() {
 }
 ```
 
-## 16.最大公约数（必须熟练）
+## 16.最大公约数（必须熟练）-
 
 **题目：** 编写程序，实现求两个正整数 m, n 的最大公约数。
 
@@ -855,7 +855,7 @@ int main() {
 
 ```
 
-## 20.最小公倍数(必须熟练）-
+## 20.最小公倍数(必须熟练）
 
 **题目：** 编写程序，实现求两个正整数 m, n 的最小公倍数。
 
@@ -928,7 +928,7 @@ int main() {
 }
 ```
 
-## 22.使用链栈转换8进制
+## +22.使用链栈转换8进制
 
 ```c
 /* 
@@ -1039,7 +1039,7 @@ int main() {
 
 ```
 
-## 24.数组的批量增（必须熟练）
+## +24.数组的批量增（必须熟练）
 
 **题目：** 设计程序，实现把一个数组的所有元素插入到另一个数组的指定索引位置。
 
@@ -1149,7 +1149,7 @@ int main() {
 }
 ```
 
-## 26.递归方法实现将输入的字符串反向输出
+## +26.递归方法实现将输入的字符串反向输出
 
 ```c
 /* 
@@ -1162,20 +1162,35 @@ int main() {
  * 基础递归，为了考递归而考递归，没什么意思。
 */
 
-# include <stdio.h>
-# include <string.h>
+#include <stdio.h>
+#include <string.h>
 
-void __reverse_output(char* _str, unsigned int local, unsigned int length) {
-    if (loca >= length) return;
-    __reverse_output(_str, local + 1, length);
-    printf("%c", _str[loca]);
+void print_reverse(char *s, int index, int len) {
+    // 递归终止：走到字符串末尾
+    if (index == len) return;
+
+    // 先递归到最后
+    print_reverse(s, index + 1, len);
+
+    // 再打印当前字符
+    putchar(s[index]);
 }
 
+
 void reverse_output() {
-    char _str[1024];
-    fgets(_str, sizeof(_str), stdin);
-    _str[1024] = '\0';
-    __reverse_output(_str, 0, strlen(_str));
+    char s[1024];
+
+    fgets(s, sizeof(s), stdin);
+
+    int len = strlen(s);
+
+    // 去掉 fgets 读进来的换行符（更直观）
+    if (len > 0 && s[len - 1] == '\n') {
+        s[len - 1] = '\0';
+        len--;
+    }
+
+    print_reverse(s, 0, len);
 }
 ```
 
@@ -1234,7 +1249,7 @@ int main() {
 
 ```
 
-## 28.左小右大（必须熟练）
+## +28.左小右大（必须熟练）
 
 **题目：** 输入一串整型正整数，设计程序，以第一个元素为基准，把比第一个元素小的都放在其左边，比第一个元素大的放其右边，和它相等的元素都放到中间，也就是“左小右大”的情况。
 
@@ -1402,7 +1417,7 @@ struct node_stu {
 int compare_stu(const void* a, const void* b) { // 考虑到本题目score是float，故不可轻易返回差值。 // 反向排序
     if (((student*)a)->cno == ((student*)b)->cno) // 注意观察括号
         return ((student*)a)->score > ((student*)b)->score ? 1 : -1;
-    else return -((student*)a)->cno + ((student*)b)->cno;
+    else return ((student*)a)->cno > ((student*)b)->cno ? -1 : 1;
 }
 
 node_stu* sort_student(student* array, unsigned int length) {
@@ -1898,7 +1913,7 @@ int find_number() {
 }
 ```
 
-## 40.十进制转K进制（必须熟练）&
+## 40.十进制转K进制（必须熟练）&-
 
 **题目：** 把十进制正整数转换为K进制字符串，题目设定K不大于16 且长度不会超过32位
 **输入：** 一个正整数n 和转换的进制K
@@ -2192,19 +2207,19 @@ int main() {
  * 翻译题。模拟算法即可
  */
 
-int get_in_list(unsigned int loca) {
-    int list[loca + 1]; // 多开一个是为了防止最后一次计算大于10
-    list[0] = 2, list[1] = 3;
-    for (int i = 2; i < loca; i++) {
-        int temp = list[i - 1] * list[i - 2];
+int get_in_list(int n) {
+    int res[n + 1]; // 多开一个是为了防止最后一次计算大于10
+    list[0] = 2, res[1] = 3;
+    for (int i = 2; i < n; i++) {
+        int temp = res[i - 1] * res[i - 2];
         if (temp >= 10) {
-            list[i++] = temp / 10;
-            list[i] = temp % 10;
+            res[i++] = temp / 10;
+            res[i] = temp % 10;
         } else {
-            list[i] = temp;
+            res[i] = temp;
         }
     }
-    return list[loca - 1];
+    return res[loca - 1];
 }
 ```
 
@@ -2353,19 +2368,19 @@ int main(){
 # include <string.h>
 # include <stdlib.h>
 
-void unique(char* string) {
+void unique(char* str) {
     unsigned int length = strlen(string);
     char result[length] = { '\0' };
-    int writing_loca = 0;
+    int resLen = 0;
     int hash[256] = { 0 };
     for (unsigned int i = 0; i < length; i++) {
-        if (hash[string[i]]) continue;
+        if (hash[str[i]]) continue;
         else {
-            result[writing_loca++] = string[i];
-            hash[string[i]] = 1;
+            result[resLen++] = str[i];
+            hash[str[i]] = 1;
         }
     }
-    memcpy(string, result, length * sizeof(char));
+    memcpy(str, result, resLen * sizeof(char));
 }
 ```
 
@@ -2539,15 +2554,10 @@ typedef struct {
     int cnt;
 } Item;
 
-// 比较函数：按次数降序，次数相同则按字符升序
-// a-b
-// 返回值 < 0：认为 a 应该排在 b 前面
-// 返回值 = 0：认为 a 和 b 顺序无所谓（逻辑上相等）
-// 返回值 > 0：认为 b 应该排在 a 前面
 //
 int cmp(const void *a, const void *b) {
     if (((Item *)b)->cnt != ((Item *)a)->cnt) {
-        return ((Item *)b)->cnt - ((Item *)a)->cnt; // 次数多的在前
+        return -((Item *)a)->cnt + ((Item *)b)->cnt; // 次数多的在前
     }
     return ((Item *)a)->ch - ((Item *)b)->ch;       // ASCII 小的在前
 }
@@ -2908,7 +2918,7 @@ int main() {
 
 ```
 
-## 55.求鞍点
+## 55.求鞍点&
 
 题目：给定一个 m×n 的矩阵 A，m、n 均小于 10，请依次按照索引递增的方式输出所有的鞍点索引坐标。鞍点是矩阵中某个元素在其所在行上是最大值，同时在其所在列上是最小值。
 
@@ -3325,7 +3335,7 @@ int main(){
 
 ```
 
-## 63.约瑟夫环问题（数组，必须熟练）
+## +63.约瑟夫环问题（数组，必须熟练）
 
 **题目：** n 个人围成一圈，编号从 1 到 n，从第一个人从 1 开始报数，数到 m 的人出列，再由下一个人重新从 1 开始报数，数到 m 的人再出圈，依次类推，直到所有的人都出圈，请输出依次出圈人的编号。
 
@@ -3769,7 +3779,7 @@ int main(){
 }
 ```
 
-## 71.字符串删除（必须熟练）
+## +71.字符串删除（必须熟练） last
 
 题目：编写程序，删除字符串中所有指定的子字符串
 
@@ -3823,7 +3833,7 @@ int main(){
 
 
 
-## 72.字符串的替换
+## +72.字符串的替换 last
 
 题目：编写程序，给定三个字符串 s1, s2, s3, 实现把字符串 s1 中出现子串 s2 的位置都替换成 s3, 字符串长度都小于 100, 且确保空间足够不会出现越界的情况
 输入：三行字符串分别代表 s1, s2, s3, 每行以回车作为结束符
@@ -4076,7 +4086,7 @@ int main(){
 }
 ```
 
-## 76.汉诺塔
+## 76.汉诺塔 last
 
 有三根柱子 A、B、C，A 柱上从下到上按大小顺序依次叠放着 n 个盘子（n 为正整数）。要求将这 n 个盘子全部从 A 移到 C，每次只能移动一个盘子，并且在移动过程中，任何时刻都不能将大盘子压在小盘子上。
 
